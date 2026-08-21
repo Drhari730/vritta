@@ -222,8 +222,9 @@
   window.addEventListener('resize', sizeCanvas);
   sizeCanvas();
 
-  // Real oscilloscope-style waveform — a smooth line that reacts to the mic.
-  let idleEnv = 0.12;   // eased amplitude when idle / between words
+  // Flowing crossing-waves visualiser (the original look) — layered sine waves
+  // in teal + orange with a glowing centre dot, all reacting to the mic level.
+  let ampEnv = 0.5;   // eased amplitude multiplier
   function drawWave() {
     const w = canvas.clientWidth, h = canvas.clientHeight, mid = h / 2;
     // Recorder canvas has zero size when its tab/login is covering it — skip.
@@ -232,55 +233,43 @@
     const dpr = window.devicePixelRatio || 1;
     if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) sizeCanvas();
     cctx.clearRect(0, 0, w, h);
-    wavePhase += 0.06;
+    wavePhase += 0.035;
 
-    let samples = null, loud = 0;
-    if (rec.active && analyser && timeData) {
-      analyser.getByteTimeDomainData(timeData);
-      samples = timeData;
-      // overall loudness (RMS) to scale the idle wobble between words
-      let sum = 0;
-      for (let i = 0; i < samples.length; i += 16) { const v = (samples[i] - 128) / 128; sum += v * v; }
-      loud = Math.sqrt(sum / (samples.length / 16));
+    // amplitude multiplier: driven by the live mic when recording, gentle idle otherwise
+    let target = 0.55;
+    if (rec.active && analyser && freqData) {
+      analyser.getByteFrequencyData(freqData);
+      let sum = 0; for (let i = 0; i < freqData.length; i++) sum += freqData[i];
+      const avg = sum / freqData.length;
+      target = Math.max(0.35, (avg / 120) * 1.7);
     }
+    ampEnv += (target - ampEnv) * 0.18;
+    const amp = ampEnv;
 
-    // amplitude the wave swings to (livelier idle so it always looks alive)
-    const targetAmp = rec.active ? Math.max(0.12, Math.min(1, loud * 3.2)) : 0.34;
-    idleEnv += (targetAmp - idleEnv) * 0.2;
-
-    // value at horizontal position x (0..1): real audio when recording, else a lively idle wave
-    function valueAt(fx) {
-      if (samples) {
-        const idx = Math.floor(fx * (samples.length - 1));
-        return (samples[idx] - 128) / 128;
-      }
-      return Math.sin(fx * 7 + wavePhase * 2.6) * 0.7
-           + Math.sin(fx * 16 - wavePhase * 1.7) * 0.35
-           + Math.sin(fx * 30 + wavePhase * 3.3) * 0.16;
-    }
-
-    function stroke(ampScale, color, lw, blur) {
-      cctx.beginPath();
-      const step = Math.max(1, Math.floor(w / 240));
-      for (let x = 0; x <= w; x += step) {
-        // taper the ends so the line fades into the box edges
-        const fx = x / w;
-        const taper = Math.sin(Math.PI * fx);
-        const y = mid + valueAt(fx) * idleEnv * (h * 0.42) * ampScale * taper;
+    const layers = [
+      { color: 'rgba(64,184,178,0.85)',  a: 24, freq: 0.015, speed: 1.0, width: 3 },   // teal
+      { color: 'rgba(255,140,80,0.80)',  a: 30, freq: 0.020, speed: 1.3, width: 2 },   // orange
+      { color: 'rgba(120,175,225,0.65)', a: 36, freq: 0.012, speed: 0.7, width: 2.5 }  // soft blue
+    ];
+    layers.forEach(L => {
+      cctx.strokeStyle = L.color; cctx.lineWidth = L.width; cctx.beginPath();
+      const amX = L.a * amp;
+      for (let x = 0; x <= w; x += 4) {
+        const y = mid + Math.sin(x * L.freq + wavePhase * L.speed) * amX
+                      + Math.cos(x * 0.008 + wavePhase * 0.4) * (amX * 0.35);
         x === 0 ? cctx.moveTo(x, y) : cctx.lineTo(x, y);
       }
-      cctx.strokeStyle = color; cctx.lineWidth = lw;
-      cctx.lineJoin = 'round'; cctx.lineCap = 'round';
-      cctx.shadowBlur = blur; cctx.shadowColor = 'rgba(232,84,30,0.65)';
       cctx.stroke();
-      cctx.shadowBlur = 0;
-    }
+    });
 
-    const on = rec.active;
-    // soft glow underlay
-    stroke(1.15, on ? 'rgba(255,150,90,0.35)' : 'rgba(214,199,230,0.35)', 7, on ? 14 : 0);
-    // crisp main line
-    stroke(1.0, on ? '#ff9a5a' : 'rgba(233,224,236,0.85)', 2.6, 0);
+    // glowing centre dot that pulses with the level
+    cctx.fillStyle = '#e8541e';
+    cctx.shadowColor = '#e8541e';
+    cctx.shadowBlur = 14;
+    cctx.beginPath();
+    cctx.arc(w / 2, mid, 4 + amp * 8, 0, Math.PI * 2);
+    cctx.fill();
+    cctx.shadowBlur = 0;
 
     requestAnimationFrame(drawWave);
   }
