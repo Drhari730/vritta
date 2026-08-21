@@ -221,8 +221,11 @@
   const barLevels = new Array(BARS).fill(0.06);
   function drawWave() {
     const w = canvas.clientWidth, h = canvas.clientHeight, mid = h / 2;
-    // Recorder canvas has zero size when its tab is hidden — skip drawing.
+    // Recorder canvas has zero size when its tab/login is covering it — skip.
     if (w <= 8 || h <= 8) { requestAnimationFrame(drawWave); return; }
+    // Self-heal: if the backing store wasn't sized while visible, size it now.
+    const dpr = window.devicePixelRatio || 1;
+    if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) sizeCanvas();
     cctx.clearRect(0, 0, w, h);
     wavePhase += 0.05;
 
@@ -251,7 +254,7 @@
       const grad = cctx.createLinearGradient(0, y, 0, y + bh);
       grad.addColorStop(0, 'rgba(255,178,122,0.95)');   // orange
       grad.addColorStop(1, 'rgba(232,84,30,0.85)');
-      cctx.fillStyle = rec.active ? grad : 'rgba(214,199,230,0.5)';
+      cctx.fillStyle = rec.active ? grad : 'rgba(255,178,122,0.5)';
       const r = Math.max(0, Math.min(bw / 2, 3));
       roundRect(cctx, x, y, bw, bh, r);
       cctx.fill();
@@ -775,30 +778,15 @@
     if (note) $('engineSub').textContent = note;
   }
 
-  async function autoSummarize() {
+  function autoSummarize() {
     if (!state.segments.length) { toast('Record or type something first', 'err'); return; }
     setEngineWorking(true);
-    let r = null, note = '';
-    try {
-      r = await api('/api/vritta/summarize', {
-        method: 'POST',
-        body: JSON.stringify({
-          transcript: discussionPlain(state.segments) || transcriptText(),
-          title: state.title, date: state.date,
-          attendees: state.attendees.map(a => a.name)
-        })
-      });
-      note = 'Summarized with AI. Review and edit anything below.';
-    } catch (err) {
-      if (err.status === 401) { showLogin(); setEngineWorking(false); return; }
-      r = analyzeLocal(state.segments);           // on-device fallback
-      note = err.status === 503
-        ? 'Summarized on your device. (Add ANTHROPIC_API_KEY for sharper AI summaries.)'
-        : 'Summarized on your device.';
-    }
-    applyAnalysis(r || {});
-    setEngineWorking(false, note);
-    toast('Draft ready — edit before exporting', 'ok');
+    // Runs entirely on your device — no network, no API key.
+    setTimeout(() => {
+      applyAnalysis(analyzeLocal(state.segments));
+      setEngineWorking(false, 'Drafted from your transcript on this device — edit anything below before exporting.');
+      toast('Draft ready — edit before exporting', 'ok');
+    }, 60);
   }
   $('autoSummarizeBtn').addEventListener('click', autoSummarize);
 
@@ -1347,6 +1335,8 @@
     $('navTabs').style.display = '';
     $('accountChip').style.display = 'flex';
     $('accountWho').textContent = session.email || '';
+    // Now that the recorder is visible, give its canvas a real drawing surface.
+    setTimeout(sizeCanvas, 0);
   }
   function showLogin() {
     $('loginScreen').style.display = 'flex';
