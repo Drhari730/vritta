@@ -1,8 +1,7 @@
 /**
  * VRITTA AI (वृत्त) — Dr G. Hari Prakash Personal Web App
- * App UI/UX matched to https://www.drhari.co.in/
- * MOM Report Generator: RSPH / MSRUAS University Letterhead
- * Full Live Transcription & Indic Translation Pipeline
+ * Real-Time Neural Indic ASR, Diarization & Translation Engine
+ * Shared Neural Engine Architecture (IndicSpeech QDA)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -20,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Live Spoken Transcript & Diarization State
     transcriptSegments: [],
     fullTranscriptText: '',
+    liveSpeechRecognition: null,
 
     // Quorum Attendees
     attendees: [
@@ -304,12 +304,14 @@ document.addEventListener('DOMContentLoaded', () => {
   requestAnimationFrame(renderAcousticWaves);
 
   /* ==========================================================================
-     Microphone Recording Engine & Web Audio
+     Microphone Recording Engine & Web Audio + Real-Time Speech Stream
      ========================================================================== */
   const toggleRecordBtn = document.getElementById('toggleRecordBtn');
   const recordBtnLabel = document.getElementById('recordBtnLabel');
   const recLiveBadge = document.getElementById('recLiveBadge');
   const recordingTimer = document.getElementById('recordingTimer');
+  const segmentsList = document.getElementById('segmentsList');
+  const emptyPlaceholder = document.getElementById('emptyTranscriptPlaceholder');
 
   if (toggleRecordBtn) {
     toggleRecordBtn.addEventListener('click', async () => {
@@ -348,20 +350,79 @@ document.addEventListener('DOMContentLoaded', () => {
       state.recordStartTime = Date.now();
 
       toggleRecordBtn.classList.add('recording');
-      recordBtnLabel.textContent = 'Stop Recording & Process Transcript';
+      recordBtnLabel.textContent = 'Stop Recording & Process Neural ASR';
       if (recLiveBadge) recLiveBadge.style.display = 'inline-flex';
 
       if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
       startTimerCounter();
+
+      // Clear previous empty placeholder
+      if (emptyPlaceholder) emptyPlaceholder.style.display = 'none';
+
+      // Start Real-Time Web Speech Recognition Stream if supported
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        try {
+          state.liveSpeechRecognition = new SpeechRecognition();
+          state.liveSpeechRecognition.continuous = true;
+          state.liveSpeechRecognition.interimResults = true;
+          
+          const selLang = document.getElementById('audioLangSelect').value;
+          state.liveSpeechRecognition.lang = selLang === 'kn' ? 'kn-IN' :
+                                              (selLang === 'hi' ? 'hi-IN' :
+                                              (selLang === 'ta' ? 'ta-IN' :
+                                              (selLang === 'te' ? 'te-IN' : 'en-IN')));
+
+          state.liveSpeechRecognition.onresult = (event) => {
+            let liveText = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+              liveText += event.results[i][0].transcript;
+            }
+            if (liveText.trim()) {
+              renderLiveTextCard(liveText.trim());
+            }
+          };
+
+          state.liveSpeechRecognition.start();
+        } catch (srErr) {
+          console.log('Web Speech API stream notice:', srErr);
+        }
+      }
 
     } catch (err) {
       alert('Microphone Notice: ' + err.message + '\nYou can also upload pre-recorded audio or load a sample preset.');
     }
   }
 
+  function renderLiveTextCard(text) {
+    if (!segmentsList) return;
+    let liveCard = document.getElementById('liveStreamingCard');
+    if (!liveCard) {
+      liveCard = document.createElement('div');
+      liveCard.id = 'liveStreamingCard';
+      liveCard.style.cssText = 'background:var(--teal-light); border:1.5px solid var(--teal); border-radius:var(--radius-sm); padding:0.75rem; margin-bottom:0.6rem; animation:pulse 2s infinite;';
+      segmentsList.insertBefore(liveCard, segmentsList.firstChild);
+    }
+    const chairName = document.getElementById('meetingChair').value || 'Dr. G. Hari Prakash';
+    liveCard.innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.25rem;">
+        <div style="font-size:0.8rem; font-weight:700; color:var(--navy);">
+          ${chairName} <span style="font-size:0.7rem; font-weight:normal; color:var(--teal);">(Live Recording & Transcribing...)</span>
+        </div>
+        <span style="font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:var(--accent); font-weight:700;">
+          LIVE SPEECH STREAM
+        </span>
+      </div>
+      <div style="font-size:0.85rem; color:var(--navy); font-weight:600; line-height:1.5;">${text}</div>
+    `;
+  }
+
   function stopRecordingSession() {
     if (state.mediaRecorder && state.mediaRecorder.state !== 'inactive') {
       state.mediaRecorder.stop();
+    }
+    if (state.liveSpeechRecognition) {
+      try { state.liveSpeechRecognition.stop(); } catch (e) {}
     }
     state.isRecording = false;
     clearInterval(state.recordTimerInterval);
@@ -372,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (navigator.vibrate) navigator.vibrate(60);
 
-    // Process live transcription in Tab 1 WITHOUT auto-jumping to Tab 2
+    // Process deep neural transcription via Faster-Whisper
     setTimeout(() => {
       transcribeAudioSession();
     }, 400);
@@ -466,20 +527,22 @@ document.addEventListener('DOMContentLoaded', () => {
      Transcribe Audio Session & Render Live Spoken Transcript in Tab 1
      ========================================================================== */
   const processingProgressWrap = document.getElementById('processingProgressWrap');
-  const segmentsList = document.getElementById('segmentsList');
-  const emptyPlaceholder = document.getElementById('emptyTranscriptPlaceholder');
 
   async function transcribeAudioSession(fileOverride = null, isPreset = false) {
     if (processingProgressWrap) {
       processingProgressWrap.style.display = 'block';
       processingProgressWrap.innerHTML = `
         <div style="font-size:0.8rem; font-weight:700; color:var(--teal);">
-          Processing neural Faster-Whisper transcription & Indic multi-speaker diarization...
+          Processing Faster-Whisper ASR & Indic multi-speaker diarization...
         </div>
       `;
     }
 
-    const fileToTranscribe = fileOverride || state.selectedFile;
+    let fileToTranscribe = fileOverride || state.selectedFile;
+    if (!fileToTranscribe && state.audioBlob && state.audioBlob.size > 0) {
+      fileToTranscribe = new File([state.audioBlob], `live_meeting_${Date.now()}.webm`, { type: 'audio/webm' });
+    }
+
     let segments = [];
 
     if (fileToTranscribe) {
@@ -576,8 +639,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
     }
-
-    // DO NOT AUTO-SWITCH TO TAB 2! STAY ON TAB 1 SO USER SEES THE TRANSCRIPT FIRST.
   }
 
   /* ==========================================================================
