@@ -82,8 +82,9 @@
     agenda: '',               // raw textarea text
     segments: [],             // { t: seconds, text, speaker }
     summary: '',
+    discussionEdited: '',     // if the user edits the discussion text, it wins over segments
     decisions: [],            // strings
-    actions: [],              // { task, owner, due }
+    actions: [],              // { task, owner, due, done }
     savedAt: null
   };
 
@@ -98,6 +99,7 @@
       b.classList.toggle('active', b.dataset.tab === tabId));
     window.scrollTo({ top: 0, behavior: 'smooth' });
     if (tabId === 'tab-saved') renderSaved();
+    if (tabId === 'tab-tasks') renderTasks();
   }
   document.querySelectorAll('.nav-tab, .mob-btn').forEach(b =>
     b.addEventListener('click', () => switchTab(b.dataset.tab)));
@@ -186,7 +188,7 @@
     Object.assign(state, {
       id: null, title: '', date: new Date().toISOString().split('T')[0], time: '',
       chair: '', venue: '', org: '', attendees: [], agenda: '',
-      segments: [], summary: '', decisions: [], actions: [], savedAt: null
+      segments: [], summary: '', discussionEdited: '', decisions: [], actions: [], savedAt: null
     });
     currentSpeaker = '';
     $('mDate').value = state.date;
@@ -214,31 +216,56 @@
   window.addEventListener('resize', sizeCanvas);
   sizeCanvas();
 
+  // Reactive bar-style waveform (the "wave pattern") — animated live from the mic.
+  const BARS = 48;
+  const barLevels = new Array(BARS).fill(0.06);
   function drawWave() {
     const w = canvas.clientWidth, h = canvas.clientHeight, mid = h / 2;
+    // Recorder canvas has zero size when its tab is hidden — skip drawing.
+    if (w <= 8 || h <= 8) { requestAnimationFrame(drawWave); return; }
     cctx.clearRect(0, 0, w, h);
-    wavePhase += 0.04;
-    let amp = 0.14;
+    wavePhase += 0.05;
+
+    let live = null;
     if (rec.active && analyser && freqData) {
       analyser.getByteFrequencyData(freqData);
-      let sum = 0; for (let i = 0; i < freqData.length; i++) sum += freqData[i];
-      amp = Math.max(0.14, (sum / freqData.length / 120) * 1.7);
+      live = freqData;
     }
-    const layers = [
-      { c: 'rgba(143,208,208,0.85)', a: 20, f: 0.018, sp: 1.0, lw: 2.5 },
-      { c: 'rgba(192,90,46,0.7)',    a: 26, f: 0.024, sp: 1.4, lw: 1.8 },
-      { c: 'rgba(255,255,255,0.35)', a: 32, f: 0.013, sp: 0.7, lw: 1.6 }
-    ];
-    layers.forEach(L => {
-      cctx.strokeStyle = L.c; cctx.lineWidth = L.lw; cctx.beginPath();
-      for (let x = 0; x <= w; x += 4) {
-        const y = mid + Math.sin(x * L.f + wavePhase * L.sp) * L.a * amp
-                      + Math.cos(x * 0.009 + wavePhase * 0.4) * L.a * amp * 0.35;
-        x === 0 ? cctx.moveTo(x, y) : cctx.lineTo(x, y);
+
+    const gap = 3;
+    const bw = (w - gap * (BARS - 1)) / BARS;
+    for (let i = 0; i < BARS; i++) {
+      let target;
+      if (live) {
+        // sample the low-mid band where speech lives
+        const idx = Math.floor((i / BARS) * (live.length * 0.7));
+        target = Math.max(0.06, (live[idx] / 255) * 1.15);
+      } else {
+        // gentle idle shimmer
+        target = 0.10 + 0.06 * (Math.sin(wavePhase + i * 0.5) * 0.5 + 0.5);
       }
-      cctx.stroke();
-    });
+      barLevels[i] += (target - barLevels[i]) * 0.35;
+      const bh = Math.max(3, barLevels[i] * (h - 8));
+      const x = i * (bw + gap);
+      const y = mid - bh / 2;
+      const grad = cctx.createLinearGradient(0, y, 0, y + bh);
+      grad.addColorStop(0, 'rgba(255,178,122,0.95)');   // orange
+      grad.addColorStop(1, 'rgba(232,84,30,0.85)');
+      cctx.fillStyle = rec.active ? grad : 'rgba(214,199,230,0.5)';
+      const r = Math.max(0, Math.min(bw / 2, 3));
+      roundRect(cctx, x, y, bw, bh, r);
+      cctx.fill();
+    }
     requestAnimationFrame(drawWave);
+  }
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
   }
   requestAnimationFrame(drawWave);
 
@@ -451,7 +478,12 @@
     if (!state.title.trim()) { toast('Add a meeting title first', 'err'); $('mTitle').focus(); return; }
     renderMinutes();
     switchTab('tab-minutes');
-    toast('Minutes built — edit, save or export');
+    // Auto-draft the summary/decisions/actions the first time, if there's a transcript.
+    if (state.segments.length && !state.summary && !state.decisions.length && !state.actions.length) {
+      autoSummarize();
+    } else {
+      toast('Minutes built — edit, save or export');
+    }
   });
 
   function syncDetailsFromForm() {
@@ -533,8 +565,12 @@
     // 4. Summary
     $('docSummary').value = state.summary || '';
 
-    // 5. Discussion / transcript (grouped by speaker when labelled)
-    $('docTranscript').innerHTML = discussionHTML(state.segments);
+    // 5. Discussion / transcript (grouped by speaker; editable, edits win)
+    if (state.discussionEdited && state.discussionEdited.trim()) {
+      $('docTranscript').textContent = state.discussionEdited;
+    } else {
+      $('docTranscript').innerHTML = discussionHTML(state.segments);
+    }
 
     // 6. Decisions
     renderDecisions();
@@ -551,6 +587,18 @@
 
   // summary edits
   $('docSummary').addEventListener('input', e => { state.summary = e.target.value; scheduleDraftSave(); });
+
+  // editable minutes title (keep the Record-tab field in sync so Save keeps it)
+  $('docTitle').addEventListener('input', e => {
+    state.title = e.target.textContent.trim();
+    $('mTitle').value = state.title;
+    scheduleDraftSave();
+  });
+  // editable discussion notes (edits win over the raw transcript on export)
+  $('docTranscript').addEventListener('input', e => {
+    state.discussionEdited = e.target.innerText;
+    scheduleDraftSave();
+  });
   $('draftSummaryBtn').addEventListener('click', () => {
     const tt = transcriptText().trim();
     if (!tt) { toast('No transcript to draft from', 'err'); return; }
@@ -614,6 +662,147 @@
   $('newActionTask').addEventListener('keydown', e => { if (e.key === 'Enter') addAction(); });
 
   /* ==========================================================================
+     Summarization engine — drafts summary, decisions & action items from the
+     transcript. Uses the server's Claude endpoint when a key is configured,
+     otherwise a solid on-device analysis (nothing leaves the browser).
+     ========================================================================== */
+  const STOP = new Set(('a an the and or but so of to in on at for with from by as is are was were be been being this that these those it its we you they he she i our your their them us me my his her not no yes will shall can could would should may might do does did have has had okay ok right just now then here there what which who whom when where why how also about into over under out up down more most some any all each every').split(' '));
+
+  const DECISION_RE = /\b(decided|agree(?:d)?|approv(?:e|ed|al)|resolv(?:e|ed)|finali[sz]e(?:d)?|conclud(?:e|ed)|ratif(?:y|ied)|confirm(?:ed)?|sign(?:ed)? off|go(?:ing)? ahead|will proceed|settle(?:d)? on)\b/i;
+  const ACTION_RE = /\b(will|shall|need(?:s)? to|have to|has to|must|going to|plan to|to be done|action item|assign(?:ed)?|follow[ -]?up|take up|prepare|submit|circulate|draft|schedule|deliver|arrange|organi[sz]e)\b/i;
+  const WEEKDAYS = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+
+  function splitSentences(text) {
+    return String(text || '').replace(/\s+/g, ' ')
+      .split(/(?<=[.!?])\s+|\n+/).map(s => s.trim()).filter(s => s.length > 4);
+  }
+  function tidy(s) {
+    s = s.trim().replace(/^[\-•*\d.)\s]+/, '');
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  // Format a Date as a local YYYY-MM-DD (no UTC shift).
+  function fmtISO(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+
+  // Best-effort due-date parsing relative to the meeting date (or today).
+  function parseDue(text) {
+    const base = state.date ? new Date(state.date + 'T00:00:00') : new Date();
+    const iso = text.match(/\b(20\d{2})-(\d{2})-(\d{2})\b/);
+    if (iso) return iso[0];
+    const dm = text.match(new RegExp('\\b(\\d{1,2})(?:st|nd|rd|th)?\\s+(' + MONTHS.join('|') + ')', 'i'));
+    if (dm) {
+      const y = base.getFullYear();
+      const mo = MONTHS.indexOf(dm[2].toLowerCase());
+      const d = new Date(y, mo, parseInt(dm[1], 10));
+      if (d < base) d.setFullYear(y + 1);
+      return fmtISO(d);
+    }
+    if (/\btomorrow\b/i.test(text)) { const d = new Date(base); d.setDate(d.getDate() + 1); return fmtISO(d); }
+    if (/\bnext week\b/i.test(text)) { const d = new Date(base); d.setDate(d.getDate() + 7); return fmtISO(d); }
+    const wd = text.match(new RegExp('\\b(?:by|on|before)\\s+(' + WEEKDAYS.join('|') + ')', 'i'));
+    if (wd) {
+      const target = WEEKDAYS.indexOf(wd[1].toLowerCase());
+      const d = new Date(base); let add = (target - d.getDay() + 7) % 7; if (add === 0) add = 7;
+      d.setDate(d.getDate() + add); return fmtISO(d);
+    }
+    return '';
+  }
+
+  function analyzeLocal(segments) {
+    const segs = (segments || []).filter(s => s.text && s.text.trim());
+    if (!segs.length) return { summary: '', decisions: [], actions: [] };
+
+    // word frequencies for salience scoring
+    const freq = {};
+    segs.forEach(s => s.text.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).forEach(w => {
+      if (w.length > 2 && !STOP.has(w)) freq[w] = (freq[w] || 0) + 1;
+    }));
+
+    // build sentence units carrying their speaker
+    const units = [];
+    segs.forEach(s => splitSentences(s.text).forEach(sen => units.push({ sen, speaker: s.speaker || '' })));
+
+    // summary: top-scoring sentences, kept in order
+    const scored = units.map((u, i) => {
+      const words = u.sen.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !STOP.has(w));
+      const score = words.reduce((n, w) => n + (freq[w] || 0), 0) / Math.max(6, words.length);
+      return { i, sen: u.sen, score };
+    });
+    const want = Math.min(5, Math.max(2, Math.round(units.length * 0.25)));
+    const top = scored.slice().sort((a, b) => b.score - a.score).slice(0, want).sort((a, b) => a.i - b.i);
+    const summary = top.map(t => t.sen.replace(/\s*[.!?]*$/, '.')).join(' ');
+
+    // decisions & actions
+    const decisions = [];
+    const actions = [];
+    const seenD = new Set(), seenA = new Set();
+    units.forEach(u => {
+      const s = u.sen;
+      if (DECISION_RE.test(s) && s.length < 240) {
+        const key = s.toLowerCase().slice(0, 60);
+        if (!seenD.has(key)) { seenD.add(key); decisions.push(tidy(s.replace(/\s*[.!?]*$/, '.'))); }
+      }
+      if (ACTION_RE.test(s) && s.length < 240) {
+        const key = s.toLowerCase().slice(0, 60);
+        if (!seenA.has(key)) {
+          seenA.add(key);
+          actions.push({ task: tidy(s.replace(/\s*[.!?]*$/, '')), owner: u.speaker || '', due: parseDue(s) });
+        }
+      }
+    });
+    return { summary, decisions: decisions.slice(0, 8), actions: actions.slice(0, 12) };
+  }
+
+  function mergeUnique(arr, incoming, keyFn) {
+    const seen = new Set(arr.map(keyFn));
+    incoming.forEach(x => { const k = keyFn(x); if (k && !seen.has(k)) { seen.add(k); arr.push(x); } });
+  }
+
+  function applyAnalysis(r) {
+    if (r.summary) { state.summary = r.summary; $('docSummary').value = r.summary; }
+    if (Array.isArray(r.decisions)) mergeUnique(state.decisions, r.decisions, d => String(d).toLowerCase().slice(0, 50));
+    if (Array.isArray(r.actions)) mergeUnique(state.actions, r.actions, a => String(a.task || '').toLowerCase().slice(0, 50));
+    renderDecisions(); renderActions();
+    scheduleDraftSave();
+  }
+
+  function setEngineWorking(on, note) {
+    const btn = $('autoSummarizeBtn');
+    btn.classList.toggle('working', on);
+    btn.disabled = on;
+    $('autoSummarizeLabel').textContent = on ? 'Summarizing…' : 'Summarize';
+    if (note) $('engineSub').textContent = note;
+  }
+
+  async function autoSummarize() {
+    if (!state.segments.length) { toast('Record or type something first', 'err'); return; }
+    setEngineWorking(true);
+    let r = null, note = '';
+    try {
+      r = await api('/api/vritta/summarize', {
+        method: 'POST',
+        body: JSON.stringify({
+          transcript: discussionPlain(state.segments) || transcriptText(),
+          title: state.title, date: state.date,
+          attendees: state.attendees.map(a => a.name)
+        })
+      });
+      note = 'Summarized with AI. Review and edit anything below.';
+    } catch (err) {
+      if (err.status === 401) { showLogin(); setEngineWorking(false); return; }
+      r = analyzeLocal(state.segments);           // on-device fallback
+      note = err.status === 503
+        ? 'Summarized on your device. (Add ANTHROPIC_API_KEY for sharper AI summaries.)'
+        : 'Summarized on your device.';
+    }
+    applyAnalysis(r || {});
+    setEngineWorking(false, note);
+    toast('Draft ready — edit before exporting', 'ok');
+  }
+  $('autoSummarizeBtn').addEventListener('click', autoSummarize);
+
+  /* ==========================================================================
      Persistence — server account (with a local offline cache/fallback)
      ========================================================================== */
   // Local cache mirrors the server list so the Journal still renders offline
@@ -636,6 +825,7 @@
       chair: state.chair, venue: state.venue, org: state.org,
       attendees: state.attendees.slice(), agenda: state.agenda,
       segments: state.segments.slice(), summary: state.summary,
+      discussionEdited: state.discussionEdited || '',
       decisions: state.decisions.slice(), actions: state.actions.slice(),
       savedAt: state.savedAt
     };
@@ -844,11 +1034,93 @@
   }
 
   /* ==========================================================================
+     Tasks tab — every action item across all meetings, with done-toggle
+     ========================================================================== */
+  let taskFilter = 'open';
+  let allTasks = [];
+
+  async function renderTasks() {
+    const box = $('tasksList');
+    box.innerHTML = `<div class="empty-hint" style="padding:1rem;">Loading tasks…</div>`;
+    let list;
+    try { list = await api('/api/vritta/meetings'); journalCache = list; }
+    catch (err) { if (err.status === 401) { showLogin(); return; } list = loadLocal(); }
+    allTasks = [];
+    list.forEach(m => (m.actions || []).forEach((a, idx) => {
+      allTasks.push({ mId: m.id, mTitle: m.title, mDate: m.date, idx, task: a.task, owner: a.owner, due: a.due, done: !!a.done });
+    }));
+    paintTasks();
+  }
+
+  function paintTasks() {
+    const box = $('tasksList');
+    let tasks = allTasks.slice();
+    if (taskFilter === 'open') tasks = tasks.filter(t => !t.done);
+    else if (taskFilter === 'done') tasks = tasks.filter(t => t.done);
+    // sort: overdue/soonest first, undated last, done at bottom
+    tasks.sort((a, b) => (a.done - b.done) || ((a.due || '9999') > (b.due || '9999') ? 1 : -1));
+
+    if (!allTasks.length) {
+      box.innerHTML = `<div class="tasks-empty">No action items yet. They’re created automatically when you add action items to a meeting’s minutes.</div>`;
+      return;
+    }
+    if (!tasks.length) {
+      box.innerHTML = `<div class="tasks-empty">Nothing here — try a different filter.</div>`;
+      return;
+    }
+    const today = new Date().toISOString().split('T')[0];
+    box.innerHTML = tasks.map(t => {
+      const overdue = t.due && !t.done && t.due < today;
+      return `
+        <div class="task-card${t.done ? ' is-done' : ''}">
+          <button class="task-check${t.done ? ' done' : ''}" data-m="${t.mId}" data-i="${t.idx}" title="Mark ${t.done ? 'not done' : 'done'}">
+            ${t.done ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>' : ''}
+          </button>
+          <div class="task-main">
+            <div class="task-title">${esc(t.task)}</div>
+            <div class="task-meta">
+              ${t.owner ? `<span><strong>Owner:</strong> ${esc(t.owner)}</span>` : ''}
+              ${t.due ? `<span class="task-due${overdue ? ' overdue' : ''}"><strong>Due:</strong> ${esc(prettyDate(t.due))}${overdue ? ' · overdue' : ''}</span>` : ''}
+              <span class="task-src" data-open="${t.mId}">${esc(t.mTitle || 'meeting')} ↗</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    box.querySelectorAll('.task-check').forEach(b =>
+      b.addEventListener('click', () => toggleTask(b.dataset.m, +b.dataset.i)));
+    box.querySelectorAll('.task-src').forEach(s =>
+      s.addEventListener('click', () => openSaved(s.dataset.open)));
+  }
+
+  async function toggleTask(mId, idx) {
+    const full = await fetchFull(mId);
+    if (!full || !full.actions || !full.actions[idx]) return;
+    full.actions[idx].done = !full.actions[idx].done;
+    try { await api('/api/vritta/meetings', { method: 'POST', body: JSON.stringify(full) }); }
+    catch (err) { if (err.status === 401) { showLogin(); return; } toast('Could not update the task', 'err'); return; }
+    cacheMeeting(full);
+    const t = allTasks.find(t => t.mId === mId && t.idx === idx);
+    if (t) t.done = full.actions[idx].done;
+    // keep the open meeting's state in sync if it's the current one
+    if (state.id === mId && state.actions[idx]) state.actions[idx].done = full.actions[idx].done;
+    paintTasks();
+  }
+
+  document.querySelectorAll('.chip-filter').forEach(b =>
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.chip-filter').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      taskFilter = b.dataset.filter;
+      paintTasks();
+    }));
+
+  /* ==========================================================================
      Exports — Print, Word (.doc HTML), Copy
      ========================================================================== */
   $('printBtn').addEventListener('click', () => {
-    // Push editable field values into the printable DOM first.
-    $('docTranscript').innerHTML = discussionHTML(state.segments);
+    // Capture any inline edits before printing (don't clobber them).
+    state.discussionEdited = $('docTranscript').innerText;
     window.print();
   });
 
@@ -878,7 +1150,7 @@
     const items = (m.agenda || '').split('\n').map(s => s.trim()).filter(Boolean);
     if (items.length) { L.push('AGENDA'); items.forEach((a, i) => L.push(` ${i + 1}. ${a}`)); L.push(''); }
     if (m.summary) { L.push('SUMMARY'); L.push(m.summary); L.push(''); }
-    const tt = discussionPlain(m.segments);
+    const tt = (m.discussionEdited && m.discussionEdited.trim()) ? m.discussionEdited : discussionPlain(m.segments);
     if (tt) { L.push('DISCUSSION NOTES'); L.push(tt); L.push(''); }
     if ((m.decisions || []).length) { L.push('DECISIONS'); m.decisions.forEach((d, i) => L.push(` ${i + 1}. ${d}`)); L.push(''); }
     if ((m.actions || []).length) {
@@ -924,7 +1196,9 @@
     }
     if (items.length) { body += h(3, 'Agenda') + '<ol style="font-size:10.5pt;">' + items.map(i => `<li>${esc(i)}</li>`).join('') + '</ol>'; }
     if (m.summary) { body += h(4, 'Summary') + `<p style="font-size:10.5pt;line-height:1.6;">${esc(m.summary).replace(/\n/g, '<br>')}</p>`; }
-    if (turns.length) {
+    if (m.discussionEdited && m.discussionEdited.trim()) {
+      body += h(5, 'Discussion notes') + `<p style="font-size:10.5pt;line-height:1.6;">${esc(m.discussionEdited).replace(/\n/g, '<br>')}</p>`;
+    } else if (turns.length) {
       body += h(5, 'Discussion notes');
       body += turns.map(t =>
         `<p style="font-size:10.5pt;line-height:1.6;margin:0 0 6px;">${t.speaker ? `<b style="color:${PURPLE}">${esc(t.speaker)}:</b> ` : ''}${esc(t.text)}</p>`
