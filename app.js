@@ -222,9 +222,15 @@
   window.addEventListener('resize', sizeCanvas);
   sizeCanvas();
 
-  // Flowing crossing-waves visualiser (the original look) — layered sine waves
-  // in teal + orange with a glowing centre dot, all reacting to the mic level.
-  let ampEnv = 0.5;   // eased amplitude multiplier
+  // Flowing crossing-waves visualiser — layered neon sine waves in teal + orange
+  // with gradient strokes, a soft light-band and a pulsing centre halo. Reacts
+  // to the live mic level.
+  let ampEnv = 0.5, dotPulse = 0;
+  function waveY(x, L, amX) {
+    return canvas.clientHeight / 2
+      + Math.sin(x * L.freq + wavePhase * L.speed) * amX
+      + Math.cos(x * 0.008 + wavePhase * 0.4) * (amX * 0.35);
+  }
   function drawWave() {
     const w = canvas.clientWidth, h = canvas.clientHeight, mid = h / 2;
     // Recorder canvas has zero size when its tab/login is covering it — skip.
@@ -234,6 +240,7 @@
     if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) sizeCanvas();
     cctx.clearRect(0, 0, w, h);
     wavePhase += 0.035;
+    dotPulse += 0.08;
 
     // amplitude multiplier: driven by the live mic when recording, gentle idle otherwise
     let target = 0.55;
@@ -247,28 +254,50 @@
     const amp = ampEnv;
 
     const layers = [
-      { color: 'rgba(64,184,178,0.85)',  a: 24, freq: 0.015, speed: 1.0, width: 3 },   // teal
-      { color: 'rgba(255,140,80,0.80)',  a: 30, freq: 0.020, speed: 1.3, width: 2 },   // orange
-      { color: 'rgba(120,175,225,0.65)', a: 36, freq: 0.012, speed: 0.7, width: 2.5 }  // soft blue
+      { c0: 'rgba(70,220,205,0.95)', c1: 'rgba(60,160,190,0.95)', a: 24, freq: 0.015, speed: 1.0, width: 2.6, glow: 'rgba(70,210,200,0.7)' },
+      { c0: 'rgba(255,180,110,0.95)', c1: 'rgba(232,84,30,0.95)', a: 30, freq: 0.020, speed: 1.3, width: 2.2, glow: 'rgba(255,120,60,0.75)' },
+      { c0: 'rgba(150,190,235,0.8)', c1: 'rgba(120,140,225,0.8)', a: 36, freq: 0.012, speed: 0.7, width: 2.0, glow: 'rgba(140,160,235,0.55)' }
     ];
+
+    // soft light-band under the main (orange) wave for depth
+    const bandL = layers[1], bandAmX = bandL.a * amp;
+    cctx.beginPath();
+    for (let x = 0; x <= w; x += 4) { const y = waveY(x, bandL, bandAmX); x === 0 ? cctx.moveTo(x, y) : cctx.lineTo(x, y); }
+    cctx.lineTo(w, h); cctx.lineTo(0, h); cctx.closePath();
+    const band = cctx.createLinearGradient(0, mid - 20, 0, h);
+    band.addColorStop(0, 'rgba(232,84,30,0.16)');
+    band.addColorStop(1, 'rgba(232,84,30,0)');
+    cctx.fillStyle = band; cctx.fill();
+
+    // glowing gradient wave lines
+    cctx.lineJoin = 'round'; cctx.lineCap = 'round';
     layers.forEach(L => {
-      cctx.strokeStyle = L.color; cctx.lineWidth = L.width; cctx.beginPath();
+      const grad = cctx.createLinearGradient(0, 0, w, 0);
+      grad.addColorStop(0, L.c0); grad.addColorStop(1, L.c1);
       const amX = L.a * amp;
-      for (let x = 0; x <= w; x += 4) {
-        const y = mid + Math.sin(x * L.freq + wavePhase * L.speed) * amX
-                      + Math.cos(x * 0.008 + wavePhase * 0.4) * (amX * 0.35);
-        x === 0 ? cctx.moveTo(x, y) : cctx.lineTo(x, y);
-      }
+      cctx.beginPath();
+      for (let x = 0; x <= w; x += 4) { const y = waveY(x, L, amX); x === 0 ? cctx.moveTo(x, y) : cctx.lineTo(x, y); }
+      cctx.strokeStyle = grad; cctx.lineWidth = L.width;
+      cctx.shadowColor = L.glow; cctx.shadowBlur = rec.active ? 12 : 7;
       cctx.stroke();
     });
+    cctx.shadowBlur = 0;
 
-    // glowing centre dot that pulses with the level
-    cctx.fillStyle = '#e8541e';
-    cctx.shadowColor = '#e8541e';
-    cctx.shadowBlur = 14;
-    cctx.beginPath();
-    cctx.arc(w / 2, mid, 4 + amp * 8, 0, Math.PI * 2);
-    cctx.fill();
+    // centre dot: pulsing halo ring + bright core
+    const cx = w / 2, r = 4 + amp * 8;
+    const ring = r + 6 + Math.sin(dotPulse) * 3;
+    const halo = cctx.createRadialGradient(cx, mid, r * 0.4, cx, mid, ring + 6);
+    halo.addColorStop(0, 'rgba(255,150,90,0.55)');
+    halo.addColorStop(1, 'rgba(232,84,30,0)');
+    cctx.fillStyle = halo;
+    cctx.beginPath(); cctx.arc(cx, mid, ring + 6, 0, Math.PI * 2); cctx.fill();
+
+    cctx.strokeStyle = 'rgba(255,178,122,0.5)'; cctx.lineWidth = 1.5;
+    cctx.beginPath(); cctx.arc(cx, mid, ring, 0, Math.PI * 2); cctx.stroke();
+
+    cctx.fillStyle = '#ffd9c2';
+    cctx.shadowColor = '#e8541e'; cctx.shadowBlur = 16;
+    cctx.beginPath(); cctx.arc(cx, mid, r, 0, Math.PI * 2); cctx.fill();
     cctx.shadowBlur = 0;
 
     requestAnimationFrame(drawWave);

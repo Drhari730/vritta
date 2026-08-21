@@ -201,12 +201,14 @@ main { padding: 1.5rem 0 2rem; }
 .recorder .sec-label { color: #ffb27a; }
 .recorder .sec-title { color: #fff; }
 .wave-box {
-  position: relative; height: 116px; margin: 0.9rem 0 1rem;
+  position: relative; height: 120px; margin: 0.9rem 0 1rem;
   background:
-    radial-gradient(120% 100% at 50% 120%, rgba(232,84,30,0.22), transparent 60%),
-    rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 14px; overflow: hidden;
+    radial-gradient(90% 120% at 50% 50%, rgba(70,200,190,0.10), transparent 55%),
+    radial-gradient(120% 140% at 50% 130%, rgba(232,84,30,0.20), transparent 60%),
+    linear-gradient(180deg, #140a24, #0f0720);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px; overflow: hidden;
+  box-shadow: inset 0 0 44px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
 }
 .wave-box canvas { width: 100%; height: 100%; display: block; }
 .timer {
