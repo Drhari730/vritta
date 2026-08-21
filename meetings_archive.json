@@ -1,0 +1,1644 @@
+[
+  {
+    "meeting_id": "VRITTA-1787282253",
+    "title": "MSRUAS Digital Health Center: MoU with Dean & ICMR Grant Review",
+    "category": "academic",
+    "date": "2026-08-21",
+    "day": "Friday",
+    "formatted_date": "August 21, 2026",
+    "time": "10:30 AM IST",
+    "venue": "Board Room / MSRUAS Health Sciences Campus",
+    "chair": "Dr. G. Hari Prakash (Chair / Lead PI)",
+    "attendees": [
+      {
+        "id": "att-1",
+        "name": "Dr. G. Hari Prakash",
+        "role": "Principal Investigator & Chair",
+        "dept": "Digital Health & Clinical AI Lead",
+        "email": "dr.hariprakash@msruas.ac.in"
+      },
+      {
+        "id": "att-2",
+        "name": "Dr. B. S. Nanda Kumar",
+        "role": "Dean (I/C), RSPH",
+        "dept": "Ramaiah School of Public Health",
+        "email": "dean.rsph@msruas.ac.in"
+      },
+      {
+        "id": "att-3",
+        "name": "Dr. Shalini K.",
+        "role": "Associate Professor & Co-PI",
+        "dept": "Biostatistics & Research Methodology",
+        "email": "shalini.k@msruas.ac.in"
+      },
+      {
+        "id": "att-4",
+        "name": "Mr. Vignesh R.",
+        "role": "Senior Research Fellow (SRF)",
+        "dept": "Digital Health AI Lab",
+        "email": "vignesh.research@msruas.ac.in"
+      }
+    ],
+    "agenda_items": [
+      "MoU ratification and governance alignment",
+      "Budget allocations across compute nodes and research staff",
+      "Field deployment and clinical data protocol finalization"
+    ],
+    "executive_summary": [
+      "The meeting was convened under the chairmanship of Dr. G. Hari Prakash (Chair / Lead PI) on Friday, August 21, 2026 to deliberate on strategic milestones, execution roadmaps, and resource governance.",
+      "All present members unanimously ratified the proposed execution blueprint and approved a total resource allocation of INR 2,500,000.",
+      "Specific accountability owners and rigorous milestone deadlines were assigned across ethical clearances, infrastructure hosting, research personnel recruitment, and client deliverables.",
+      "The committee affirmed its commitment to high-rigor standards, scheduled weekly asynchronous tracking, and set the next formal review for the subsequent cycle."
+    ],
+    "decisions_logged": [
+      "Formal approval granted for the comprehensive project methodology and execution timeline.",
+      "Resource allocation of INR 2,500,000 formally endorsed and sanctioned.",
+      "Dedicated task force constituted with assigned responsibilities and strict time-bound deliverables.",
+      "Agreement reached on ethical compliances, data security governance, and multi-stakeholder reporting protocols."
+    ],
+    "discussion_sections": [
+      {
+        "topic": "1. Opening Remarks & Review of Agenda",
+        "summary": "The Chair, Dr. G. Hari Prakash (Chair / Lead PI), welcomed the esteemed members and outlined the paramount strategic objectives. The agenda was formally adopted without amendments."
+      },
+      {
+        "topic": "2. Technical & Research Roadmap Deliberations",
+        "summary": "Detailed discussions were held on data architectures, clinical validation protocols, AI modeling pipelines, and community outreach frameworks. Consensus was reached on adopting high-availability infrastructure."
+      },
+      {
+        "topic": "3. Budget, Grants & Resource Allocation Review",
+        "summary": "The financial committee reviewed the itemized cost breakdown. Approved expenditures total INR 2,500,000 across hardware, human resources, field execution, and dissemination."
+      },
+      {
+        "topic": "4. Governance, Risk Mitigation & Next Steps",
+        "summary": "Potential operational bottlenecks were evaluated with mitigation safeguards. All members agreed on continuous audit mechanisms and bi-weekly milestone checkpoints."
+      }
+    ],
+    "action_items": [
+      {
+        "id": "ACT-01",
+        "task": "Submit the finalized Institutional Ethics Committee (IEC) documentation and clinical trial registry dossier.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-08-28",
+        "priority": "Critical",
+        "status": "In Progress"
+      },
+      {
+        "id": "ACT-02",
+        "task": "Finalize MoU terms with Dean of Academics regarding GPU server hosting in the MSRUAS Digital Health Center.",
+        "assignee": "Dr. B. S. Nanda Kumar",
+        "email": "dean.rsph@msruas.ac.in",
+        "deadline": "2026-09-05",
+        "priority": "High",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-03",
+        "task": "Complete candidate screening for 2 Junior Research Fellows (JRF) in Public Health Epidemiology.",
+        "assignee": "Dr. Shalini K.",
+        "email": "shalini.k@msruas.ac.in",
+        "deadline": "2026-09-12",
+        "priority": "Medium",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-04",
+        "task": "Deploy community field-survey tablets with offline encrypted sync for the peri-urban cohort study.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-09-20",
+        "priority": "High",
+        "status": "Pending"
+      }
+    ],
+    "budget_allocations": [
+      {
+        "category": "Cloud Computing & AI Servers (Digital Health Lab)",
+        "allocated": 750000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-throughput GPU nodes for epidemiology modeling"
+      },
+      {
+        "category": "Research Staff & Junior Research Fellows (JRF)",
+        "allocated": 960000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Stipends for 2 JRF positions for 12 months"
+      },
+      {
+        "category": "Field Data Collection & Tablet Hardware",
+        "allocated": 350000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "MSRUAS community health outreach in Bengaluru peri-urban areas"
+      },
+      {
+        "category": "Open Access Publications & Conference Dissemination",
+        "allocated": 240000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-impact Lancet / BMC Public Health journal fees"
+      },
+      {
+        "category": "Institutional Overhead & Contingency",
+        "allocated": 200000,
+        "currency": "INR",
+        "status": "Under Review",
+        "remarks": "Dean's office discretionary fund"
+      }
+    ],
+    "total_budget_allocated": 2500000,
+    "currency": "INR",
+    "next_meeting": "Friday, September 04, 2026 at 10:30 AM IST",
+    "generated_at": "2026-08-21 08:47:33"
+  },
+  {
+    "meeting_id": "VRITTA-1787282233",
+    "title": "MSRUAS Digital Health Center: MoU with Dean & ICMR Grant Review",
+    "category": "academic",
+    "date": "2026-08-21",
+    "day": "Friday",
+    "formatted_date": "August 21, 2026",
+    "time": "10:30 AM IST",
+    "venue": "Board Room / MSRUAS Health Sciences Campus",
+    "chair": "Dr. G. Hari Prakash (Chair / Lead PI)",
+    "attendees": [
+      {
+        "id": "att-1",
+        "name": "Dr. G. Hari Prakash",
+        "role": "Principal Investigator & Chair",
+        "dept": "Digital Health & Clinical AI Lead",
+        "email": "dr.hariprakash@msruas.ac.in"
+      },
+      {
+        "id": "att-2",
+        "name": "Dr. B. S. Nanda Kumar",
+        "role": "Dean (I/C), RSPH",
+        "dept": "Ramaiah School of Public Health",
+        "email": "dean.rsph@msruas.ac.in"
+      },
+      {
+        "id": "att-3",
+        "name": "Dr. Shalini K.",
+        "role": "Associate Professor & Co-PI",
+        "dept": "Biostatistics & Research Methodology",
+        "email": "shalini.k@msruas.ac.in"
+      },
+      {
+        "id": "att-4",
+        "name": "Mr. Vignesh R.",
+        "role": "Senior Research Fellow (SRF)",
+        "dept": "Digital Health AI Lab",
+        "email": "vignesh.research@msruas.ac.in"
+      }
+    ],
+    "agenda_items": [
+      "MoU ratification and governance alignment",
+      "Budget allocations across compute nodes and research staff",
+      "Field deployment and clinical data protocol finalization"
+    ],
+    "executive_summary": [
+      "The meeting was convened under the chairmanship of Dr. G. Hari Prakash (Chair / Lead PI) on Friday, August 21, 2026 to deliberate on strategic milestones, execution roadmaps, and resource governance.",
+      "All present members unanimously ratified the proposed execution blueprint and approved a total resource allocation of INR 2,500,000.",
+      "Specific accountability owners and rigorous milestone deadlines were assigned across ethical clearances, infrastructure hosting, research personnel recruitment, and client deliverables.",
+      "The committee affirmed its commitment to high-rigor standards, scheduled weekly asynchronous tracking, and set the next formal review for the subsequent cycle."
+    ],
+    "decisions_logged": [
+      "Formal approval granted for the comprehensive project methodology and execution timeline.",
+      "Resource allocation of INR 2,500,000 formally endorsed and sanctioned.",
+      "Dedicated task force constituted with assigned responsibilities and strict time-bound deliverables.",
+      "Agreement reached on ethical compliances, data security governance, and multi-stakeholder reporting protocols."
+    ],
+    "discussion_sections": [
+      {
+        "topic": "1. Opening Remarks & Review of Agenda",
+        "summary": "The Chair, Dr. G. Hari Prakash (Chair / Lead PI), welcomed the esteemed members and outlined the paramount strategic objectives. The agenda was formally adopted without amendments."
+      },
+      {
+        "topic": "2. Technical & Research Roadmap Deliberations",
+        "summary": "Detailed discussions were held on data architectures, clinical validation protocols, AI modeling pipelines, and community outreach frameworks. Consensus was reached on adopting high-availability infrastructure."
+      },
+      {
+        "topic": "3. Budget, Grants & Resource Allocation Review",
+        "summary": "The financial committee reviewed the itemized cost breakdown. Approved expenditures total INR 2,500,000 across hardware, human resources, field execution, and dissemination."
+      },
+      {
+        "topic": "4. Governance, Risk Mitigation & Next Steps",
+        "summary": "Potential operational bottlenecks were evaluated with mitigation safeguards. All members agreed on continuous audit mechanisms and bi-weekly milestone checkpoints."
+      }
+    ],
+    "action_items": [
+      {
+        "id": "ACT-01",
+        "task": "Submit the finalized Institutional Ethics Committee (IEC) documentation and clinical trial registry dossier.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-08-28",
+        "priority": "Critical",
+        "status": "In Progress"
+      },
+      {
+        "id": "ACT-02",
+        "task": "Finalize MoU terms with Dean of Academics regarding GPU server hosting in the MSRUAS Digital Health Center.",
+        "assignee": "Dr. B. S. Nanda Kumar",
+        "email": "dean.rsph@msruas.ac.in",
+        "deadline": "2026-09-05",
+        "priority": "High",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-03",
+        "task": "Complete candidate screening for 2 Junior Research Fellows (JRF) in Public Health Epidemiology.",
+        "assignee": "Dr. Shalini K.",
+        "email": "shalini.k@msruas.ac.in",
+        "deadline": "2026-09-12",
+        "priority": "Medium",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-04",
+        "task": "Deploy community field-survey tablets with offline encrypted sync for the peri-urban cohort study.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-09-20",
+        "priority": "High",
+        "status": "Pending"
+      }
+    ],
+    "budget_allocations": [
+      {
+        "category": "Cloud Computing & AI Servers (Digital Health Lab)",
+        "allocated": 750000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-throughput GPU nodes for epidemiology modeling"
+      },
+      {
+        "category": "Research Staff & Junior Research Fellows (JRF)",
+        "allocated": 960000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Stipends for 2 JRF positions for 12 months"
+      },
+      {
+        "category": "Field Data Collection & Tablet Hardware",
+        "allocated": 350000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "MSRUAS community health outreach in Bengaluru peri-urban areas"
+      },
+      {
+        "category": "Open Access Publications & Conference Dissemination",
+        "allocated": 240000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-impact Lancet / BMC Public Health journal fees"
+      },
+      {
+        "category": "Institutional Overhead & Contingency",
+        "allocated": 200000,
+        "currency": "INR",
+        "status": "Under Review",
+        "remarks": "Dean's office discretionary fund"
+      }
+    ],
+    "total_budget_allocated": 2500000,
+    "currency": "INR",
+    "next_meeting": "Friday, September 04, 2026 at 10:30 AM IST",
+    "generated_at": "2026-08-21 08:47:13"
+  },
+  {
+    "meeting_id": "VRITTA-1787281973",
+    "title": "MSRUAS Digital Health Center: MoU with Dean & ICMR Grant Review",
+    "category": "academic",
+    "date": "2026-08-21",
+    "day": "Friday",
+    "formatted_date": "August 21, 2026",
+    "time": "10:30 AM IST",
+    "venue": "Board Room / MSRUAS Health Sciences Campus",
+    "chair": "Dr. G. Hari Prakash (Chair / Lead PI)",
+    "attendees": [
+      {
+        "id": "att-1",
+        "name": "Dr. G. Hari Prakash",
+        "role": "Principal Investigator & Chair",
+        "dept": "Dept. of Public Health & Digital Health Lead",
+        "email": "dr.hariprakash@msruas.ac.in"
+      },
+      {
+        "id": "att-2",
+        "name": "Dr. B. S. Nanda Kumar",
+        "role": "Dean (I/C), RSPH",
+        "dept": "Ramaiah School of Public Health",
+        "email": "dean.rsph@msruas.ac.in"
+      },
+      {
+        "id": "att-3",
+        "name": "Dr. Shalini K.",
+        "role": "Associate Professor & Co-PI",
+        "dept": "Biostatistics & Research Methodology",
+        "email": "shalini.k@msruas.ac.in"
+      },
+      {
+        "id": "att-4",
+        "name": "Mr. Vignesh R.",
+        "role": "Senior Research Fellow (SRF)",
+        "dept": "Digital Health AI Lab",
+        "email": "vignesh.research@msruas.ac.in"
+      }
+    ],
+    "agenda_items": [
+      "MoU ratification and inter-institutional governance",
+      "Budget allocations across compute nodes and research staff",
+      "Field deployment and clinical data protocol finalization"
+    ],
+    "executive_summary": [
+      "The meeting was convened under the chairmanship of Dr. G. Hari Prakash (Chair / Lead PI) on Friday, August 21, 2026 to deliberate on strategic milestones, execution roadmaps, and resource governance.",
+      "All present members unanimously ratified the proposed execution blueprint and approved a total resource allocation of INR 2,500,000.",
+      "Specific accountability owners and rigorous milestone deadlines were assigned across ethical clearances, infrastructure hosting, research personnel recruitment, and client deliverables.",
+      "The committee affirmed its commitment to high-rigor standards, scheduled weekly asynchronous tracking, and set the next formal review for the subsequent cycle."
+    ],
+    "decisions_logged": [
+      "Formal approval granted for the comprehensive project methodology and execution timeline.",
+      "Resource allocation of INR 2,500,000 formally endorsed and sanctioned.",
+      "Dedicated task force constituted with assigned responsibilities and strict time-bound deliverables.",
+      "Agreement reached on ethical compliances, data security governance, and multi-stakeholder reporting protocols."
+    ],
+    "discussion_sections": [
+      {
+        "topic": "1. Opening Remarks & Review of Agenda",
+        "summary": "The Chair, Dr. G. Hari Prakash (Chair / Lead PI), welcomed the esteemed members and outlined the paramount strategic objectives. The agenda was formally adopted without amendments."
+      },
+      {
+        "topic": "2. Technical & Research Roadmap Deliberations",
+        "summary": "Detailed discussions were held on data architectures, clinical validation protocols, AI modeling pipelines, and community outreach frameworks. Consensus was reached on adopting high-availability infrastructure."
+      },
+      {
+        "topic": "3. Budget, Grants & Resource Allocation Review",
+        "summary": "The financial committee reviewed the itemized cost breakdown. Approved expenditures total INR 2,500,000 across hardware, human resources, field execution, and dissemination."
+      },
+      {
+        "topic": "4. Governance, Risk Mitigation & Next Steps",
+        "summary": "Potential operational bottlenecks were evaluated with mitigation safeguards. All members agreed on continuous audit mechanisms and bi-weekly milestone checkpoints."
+      }
+    ],
+    "action_items": [
+      {
+        "id": "ACT-01",
+        "task": "Submit the finalized Institutional Ethics Committee (IEC) documentation and clinical trial registry dossier.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-08-28",
+        "priority": "Critical",
+        "status": "In Progress"
+      },
+      {
+        "id": "ACT-02",
+        "task": "Finalize MoU terms with Dean of Academics regarding GPU server hosting in the MSRUAS Digital Health Center.",
+        "assignee": "Dr. B. S. Nanda Kumar",
+        "email": "dean.rsph@msruas.ac.in",
+        "deadline": "2026-09-05",
+        "priority": "High",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-03",
+        "task": "Complete candidate screening for 2 Junior Research Fellows (JRF) in Public Health Epidemiology.",
+        "assignee": "Dr. Shalini K.",
+        "email": "shalini.k@msruas.ac.in",
+        "deadline": "2026-09-12",
+        "priority": "Medium",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-04",
+        "task": "Deploy community field-survey tablets with offline encrypted sync for the peri-urban cohort study.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-09-20",
+        "priority": "High",
+        "status": "Pending"
+      }
+    ],
+    "budget_allocations": [
+      {
+        "category": "Cloud Computing & AI Servers (Digital Health Lab)",
+        "allocated": 750000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-throughput GPU nodes for epidemiology modeling"
+      },
+      {
+        "category": "Research Staff & Junior Research Fellows (JRF)",
+        "allocated": 960000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Stipends for 2 JRF positions for 12 months"
+      },
+      {
+        "category": "Field Data Collection & Tablet Hardware",
+        "allocated": 350000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "MSRUAS community health outreach in Bengaluru peri-urban areas"
+      },
+      {
+        "category": "Open Access Publications & Conference Dissemination",
+        "allocated": 240000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-impact Lancet / BMC Public Health journal fees"
+      },
+      {
+        "category": "Institutional Overhead & Contingency",
+        "allocated": 200000,
+        "currency": "INR",
+        "status": "Under Review",
+        "remarks": "Dean's office discretionary fund"
+      }
+    ],
+    "total_budget_allocated": 2500000,
+    "currency": "INR",
+    "next_meeting": "Friday, September 04, 2026 at 10:30 AM IST",
+    "generated_at": "2026-08-21 08:42:53"
+  },
+  {
+    "meeting_id": "VRITTA-1787280832",
+    "title": "ICMR AI Telemetry Grant: Phase 2 Sensor Deployment & Cloud Pipeline Review",
+    "category": "academic",
+    "date": "2026-08-21",
+    "day": "Friday",
+    "formatted_date": "August 21, 2026",
+    "time": "10:30 AM IST",
+    "venue": "Board Room / MSRUAS Health Sciences Campus",
+    "chair": "Dr. G. Hari Prakash (Lead PI)",
+    "attendees": [
+      {
+        "id": "att-1",
+        "name": "Dr. G. Hari Prakash",
+        "role": "Principal Investigator & Chair",
+        "dept": "Dept. of Public Health & Digital Health Lead",
+        "email": "dr.hariprakash@msruas.ac.in"
+      },
+      {
+        "id": "att-2",
+        "name": "Prof. N. Ramanathan",
+        "role": "Dean of Faculty",
+        "dept": "Faculty of Life & Allied Health Sciences",
+        "email": "dean.lifesciences@msruas.ac.in"
+      },
+      {
+        "id": "att-3",
+        "name": "Dr. Shalini K.",
+        "role": "Associate Professor & Co-PI",
+        "dept": "Biostatistics & Research Methodology",
+        "email": "shalini.k@msruas.ac.in"
+      },
+      {
+        "id": "att-4",
+        "name": "Mr. Vignesh R.",
+        "role": "Senior Research Fellow (SRF)",
+        "dept": "Digital Health AI Lab",
+        "email": "vignesh.research@msruas.ac.in"
+      }
+    ],
+    "agenda_items": [
+      "MoU ratification and governance alignment",
+      "Budget allocations across compute nodes and research staff",
+      "Field deployment and clinical data protocol finalization"
+    ],
+    "executive_summary": [
+      "The meeting was convened under the chairmanship of Dr. G. Hari Prakash (Lead PI) on Friday, August 21, 2026 to deliberate on strategic milestones, execution roadmaps, and resource governance.",
+      "All present members unanimously ratified the proposed execution blueprint and approved a total resource allocation of INR 2,500,000.",
+      "Specific accountability owners and rigorous milestone deadlines were assigned across ethical clearances, infrastructure hosting, research personnel recruitment, and client deliverables.",
+      "The committee affirmed its commitment to high-rigor standards, scheduled weekly asynchronous tracking, and set the next formal review for the subsequent cycle."
+    ],
+    "decisions_logged": [
+      "Formal approval granted for the comprehensive project methodology and execution timeline.",
+      "Resource allocation of INR 2,500,000 formally endorsed and sanctioned.",
+      "Dedicated task force constituted with assigned responsibilities and strict time-bound deliverables.",
+      "Agreement reached on ethical compliances, data security governance, and multi-stakeholder reporting protocols."
+    ],
+    "discussion_sections": [
+      {
+        "topic": "1. Opening Remarks & Review of Agenda",
+        "summary": "The Chair, Dr. G. Hari Prakash (Lead PI), welcomed the esteemed members and outlined the paramount strategic objectives. The agenda was formally adopted without amendments."
+      },
+      {
+        "topic": "2. Technical & Research Roadmap Deliberations",
+        "summary": "Detailed discussions were held on data architectures, clinical validation protocols, AI modeling pipelines, and community outreach frameworks. Consensus was reached on adopting high-availability infrastructure."
+      },
+      {
+        "topic": "3. Budget, Grants & Resource Allocation Review",
+        "summary": "The financial committee reviewed the itemized cost breakdown. Approved expenditures total INR 2,500,000 across hardware, human resources, field execution, and dissemination."
+      },
+      {
+        "topic": "4. Governance, Risk Mitigation & Next Steps",
+        "summary": "Potential operational bottlenecks were evaluated with mitigation safeguards. All members agreed on continuous audit mechanisms and bi-weekly milestone checkpoints."
+      }
+    ],
+    "action_items": [
+      {
+        "id": "ACT-01",
+        "task": "Submit the finalized Institutional Ethics Committee (IEC) documentation and clinical trial registry dossier.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-08-28",
+        "priority": "Critical",
+        "status": "In Progress"
+      },
+      {
+        "id": "ACT-02",
+        "task": "Finalize MoU terms with Dean of Academics regarding GPU server hosting in the MSRUAS Digital Health Center.",
+        "assignee": "Prof. N. Ramanathan",
+        "email": "dean.lifesciences@msruas.ac.in",
+        "deadline": "2026-09-05",
+        "priority": "High",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-03",
+        "task": "Complete candidate screening for 2 Junior Research Fellows (JRF) in Public Health Epidemiology.",
+        "assignee": "Dr. Shalini K.",
+        "email": "shalini.k@msruas.ac.in",
+        "deadline": "2026-09-12",
+        "priority": "Medium",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-04",
+        "task": "Deploy community field-survey tablets with offline encrypted sync for the peri-urban cohort study.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-09-20",
+        "priority": "High",
+        "status": "Pending"
+      }
+    ],
+    "budget_allocations": [
+      {
+        "category": "Cloud Computing & AI Servers (Digital Health Lab)",
+        "allocated": 750000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-throughput GPU nodes for epidemiology modeling"
+      },
+      {
+        "category": "Research Staff & Junior Research Fellows (JRF)",
+        "allocated": 960000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Stipends for 2 JRF positions for 12 months"
+      },
+      {
+        "category": "Field Data Collection & Tablet Hardware",
+        "allocated": 350000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "MSRUAS community health outreach in Bengaluru peri-urban areas"
+      },
+      {
+        "category": "Open Access Publications & Conference Dissemination",
+        "allocated": 240000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-impact Lancet / BMC Public Health journal fees"
+      },
+      {
+        "category": "Institutional Overhead & Contingency",
+        "allocated": 200000,
+        "currency": "INR",
+        "status": "Under Review",
+        "remarks": "Dean's office discretionary fund"
+      }
+    ],
+    "total_budget_allocated": 2500000,
+    "currency": "INR",
+    "next_meeting": "Friday, September 04, 2026 at 10:30 AM IST",
+    "generated_at": "2026-08-21 08:23:52"
+  },
+  {
+    "meeting_id": "VRITTA-1787280600",
+    "title": "Digital Health Center: MoU with Dean & ICMR Grant Review",
+    "category": "academic",
+    "date": "2026-08-21",
+    "day": "Friday",
+    "formatted_date": "August 21, 2026",
+    "time": "10:30 AM IST",
+    "venue": "Board Room / MSRUAS Health Sciences Campus",
+    "chair": "Dr. G. Hari Prakash (Chair / Lead PI)",
+    "attendees": [
+      {
+        "id": "att-1",
+        "name": "Dr. G. Hari Prakash",
+        "role": "Principal Investigator & Chair",
+        "dept": "Dept. of Public Health & Digital Health Lead",
+        "email": "dr.hariprakash@msruas.ac.in"
+      },
+      {
+        "id": "att-2",
+        "name": "Prof. N. Ramanathan",
+        "role": "Dean of Faculty",
+        "dept": "Faculty of Life & Allied Health Sciences",
+        "email": "dean.lifesciences@msruas.ac.in"
+      },
+      {
+        "id": "att-3",
+        "name": "Dr. Shalini K.",
+        "role": "Associate Professor & Co-PI",
+        "dept": "Biostatistics & Research Methodology",
+        "email": "shalini.k@msruas.ac.in"
+      },
+      {
+        "id": "att-4",
+        "name": "Mr. Vignesh R.",
+        "role": "Senior Research Fellow (SRF)",
+        "dept": "Digital Health AI Lab",
+        "email": "vignesh.research@msruas.ac.in"
+      }
+    ],
+    "agenda_items": [
+      "MoU ratification and governance alignment",
+      "Budget allocations across compute nodes and research staff",
+      "Field deployment and clinical data protocol finalization"
+    ],
+    "executive_summary": [
+      "The meeting was convened under the chairmanship of Dr. G. Hari Prakash (Chair / Lead PI) on Friday, August 21, 2026 to deliberate on strategic milestones, execution roadmaps, and resource governance.",
+      "All present members unanimously ratified the proposed execution blueprint and approved a total resource allocation of INR 2,500,000.",
+      "Specific accountability owners and rigorous milestone deadlines were assigned across ethical clearances, infrastructure hosting, research personnel recruitment, and client deliverables.",
+      "The committee affirmed its commitment to high-rigor standards, scheduled weekly asynchronous tracking, and set the next formal review for the subsequent cycle."
+    ],
+    "decisions_logged": [
+      "Formal approval granted for the comprehensive project methodology and execution timeline.",
+      "Resource allocation of INR 2,500,000 formally endorsed and sanctioned.",
+      "Dedicated task force constituted with assigned responsibilities and strict time-bound deliverables.",
+      "Agreement reached on ethical compliances, data security governance, and multi-stakeholder reporting protocols."
+    ],
+    "discussion_sections": [
+      {
+        "topic": "1. Opening Remarks & Review of Agenda",
+        "summary": "The Chair, Dr. G. Hari Prakash (Chair / Lead PI), welcomed the esteemed members and outlined the paramount strategic objectives. The agenda was formally adopted without amendments."
+      },
+      {
+        "topic": "2. Technical & Research Roadmap Deliberations",
+        "summary": "Detailed discussions were held on data architectures, clinical validation protocols, AI modeling pipelines, and community outreach frameworks. Consensus was reached on adopting high-availability infrastructure."
+      },
+      {
+        "topic": "3. Budget, Grants & Resource Allocation Review",
+        "summary": "The financial committee reviewed the itemized cost breakdown. Approved expenditures total INR 2,500,000 across hardware, human resources, field execution, and dissemination."
+      },
+      {
+        "topic": "4. Governance, Risk Mitigation & Next Steps",
+        "summary": "Potential operational bottlenecks were evaluated with mitigation safeguards. All members agreed on continuous audit mechanisms and bi-weekly milestone checkpoints."
+      }
+    ],
+    "action_items": [
+      {
+        "id": "ACT-01",
+        "task": "Submit the finalized Institutional Ethics Committee (IEC) documentation and clinical trial registry dossier.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-08-28",
+        "priority": "Critical",
+        "status": "In Progress"
+      },
+      {
+        "id": "ACT-02",
+        "task": "Finalize MoU terms with Dean of Academics regarding GPU server hosting in the MSRUAS Digital Health Center.",
+        "assignee": "Prof. N. Ramanathan",
+        "email": "dean.lifesciences@msruas.ac.in",
+        "deadline": "2026-09-05",
+        "priority": "High",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-03",
+        "task": "Complete candidate screening for 2 Junior Research Fellows (JRF) in Public Health Epidemiology.",
+        "assignee": "Dr. Shalini K.",
+        "email": "shalini.k@msruas.ac.in",
+        "deadline": "2026-09-12",
+        "priority": "Medium",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-04",
+        "task": "Deploy community field-survey tablets with offline encrypted sync for the peri-urban cohort study.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-09-20",
+        "priority": "High",
+        "status": "Pending"
+      }
+    ],
+    "budget_allocations": [
+      {
+        "category": "Cloud Computing & AI Servers (Digital Health Lab)",
+        "allocated": 750000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-throughput GPU nodes for epidemiology modeling"
+      },
+      {
+        "category": "Research Staff & Junior Research Fellows (JRF)",
+        "allocated": 960000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Stipends for 2 JRF positions for 12 months"
+      },
+      {
+        "category": "Field Data Collection & Tablet Hardware",
+        "allocated": 350000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "MSRUAS community health outreach in Bengaluru peri-urban areas"
+      },
+      {
+        "category": "Open Access Publications & Conference Dissemination",
+        "allocated": 240000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-impact Lancet / BMC Public Health journal fees"
+      },
+      {
+        "category": "Institutional Overhead & Contingency",
+        "allocated": 200000,
+        "currency": "INR",
+        "status": "Under Review",
+        "remarks": "Dean's office discretionary fund"
+      }
+    ],
+    "total_budget_allocated": 2500000,
+    "currency": "INR",
+    "next_meeting": "Friday, September 04, 2026 at 10:30 AM IST",
+    "generated_at": "2026-08-21 08:20:00"
+  },
+  {
+    "meeting_id": "VRITTA-1787280105",
+    "title": "Digital Health Center: MoU with Dean & ICMR Grant Review",
+    "category": "academic",
+    "date": "2026-08-21",
+    "day": "Friday",
+    "formatted_date": "August 21, 2026",
+    "time": "10:30 AM IST",
+    "venue": "Board Room / MSRUAS Health Sciences Campus",
+    "chair": "Dr. G. Hari Prakash (Chair / Lead PI)",
+    "attendees": [
+      {
+        "id": "att-1",
+        "name": "Dr. G. Hari Prakash",
+        "role": "Principal Investigator & Chair",
+        "dept": "Dept. of Public Health & Digital Health Lead",
+        "email": "dr.hariprakash@msruas.ac.in"
+      },
+      {
+        "id": "att-2",
+        "name": "Prof. N. Ramanathan",
+        "role": "Dean of Faculty",
+        "dept": "Faculty of Life & Allied Health Sciences",
+        "email": "dean.lifesciences@msruas.ac.in"
+      },
+      {
+        "id": "att-3",
+        "name": "Dr. Shalini K.",
+        "role": "Associate Professor & Co-PI",
+        "dept": "Biostatistics & Research Methodology",
+        "email": "shalini.k@msruas.ac.in"
+      },
+      {
+        "id": "att-4",
+        "name": "Mr. Vignesh R.",
+        "role": "Senior Research Fellow (SRF)",
+        "dept": "Digital Health AI Lab",
+        "email": "vignesh.research@msruas.ac.in"
+      }
+    ],
+    "agenda_items": [
+      "MoU ratification and governance alignment",
+      "Budget allocations across compute nodes and research staff",
+      "Field deployment and clinical data protocol finalization"
+    ],
+    "executive_summary": [
+      "The meeting was convened under the chairmanship of Dr. G. Hari Prakash (Chair / Lead PI) on Friday, August 21, 2026 to deliberate on strategic milestones, execution roadmaps, and resource governance.",
+      "All present members unanimously ratified the proposed execution blueprint and approved a total resource allocation of INR 2,500,000.",
+      "Specific accountability owners and rigorous milestone deadlines were assigned across ethical clearances, infrastructure hosting, research personnel recruitment, and client deliverables.",
+      "The committee affirmed its commitment to high-rigor standards, scheduled weekly asynchronous tracking, and set the next formal review for the subsequent cycle."
+    ],
+    "decisions_logged": [
+      "Formal approval granted for the comprehensive project methodology and execution timeline.",
+      "Resource allocation of INR 2,500,000 formally endorsed and sanctioned.",
+      "Dedicated task force constituted with assigned responsibilities and strict time-bound deliverables.",
+      "Agreement reached on ethical compliances, data security governance, and multi-stakeholder reporting protocols."
+    ],
+    "discussion_sections": [
+      {
+        "topic": "1. Opening Remarks & Review of Agenda",
+        "summary": "The Chair, Dr. G. Hari Prakash (Chair / Lead PI), welcomed the esteemed members and outlined the paramount strategic objectives. The agenda was formally adopted without amendments."
+      },
+      {
+        "topic": "2. Technical & Research Roadmap Deliberations",
+        "summary": "Detailed discussions were held on data architectures, clinical validation protocols, AI modeling pipelines, and community outreach frameworks. Consensus was reached on adopting high-availability infrastructure."
+      },
+      {
+        "topic": "3. Budget, Grants & Resource Allocation Review",
+        "summary": "The financial committee reviewed the itemized cost breakdown. Approved expenditures total INR 2,500,000 across hardware, human resources, field execution, and dissemination."
+      },
+      {
+        "topic": "4. Governance, Risk Mitigation & Next Steps",
+        "summary": "Potential operational bottlenecks were evaluated with mitigation safeguards. All members agreed on continuous audit mechanisms and bi-weekly milestone checkpoints."
+      }
+    ],
+    "action_items": [
+      {
+        "id": "ACT-01",
+        "task": "Submit the finalized Institutional Ethics Committee (IEC) documentation and clinical trial registry dossier.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-08-28",
+        "priority": "Critical",
+        "status": "In Progress"
+      },
+      {
+        "id": "ACT-02",
+        "task": "Finalize MoU terms with Dean of Academics regarding GPU server hosting in the MSRUAS Digital Health Center.",
+        "assignee": "Prof. N. Ramanathan",
+        "email": "dean.lifesciences@msruas.ac.in",
+        "deadline": "2026-09-05",
+        "priority": "High",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-03",
+        "task": "Complete candidate screening for 2 Junior Research Fellows (JRF) in Public Health Epidemiology.",
+        "assignee": "Dr. Shalini K.",
+        "email": "shalini.k@msruas.ac.in",
+        "deadline": "2026-09-12",
+        "priority": "Medium",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-04",
+        "task": "Deploy community field-survey tablets with offline encrypted sync for the peri-urban cohort study.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-09-20",
+        "priority": "High",
+        "status": "Pending"
+      }
+    ],
+    "budget_allocations": [
+      {
+        "category": "Cloud Computing & AI Servers (Digital Health Lab)",
+        "allocated": 750000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-throughput GPU nodes for epidemiology modeling"
+      },
+      {
+        "category": "Research Staff & Junior Research Fellows (JRF)",
+        "allocated": 960000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Stipends for 2 JRF positions for 12 months"
+      },
+      {
+        "category": "Field Data Collection & Tablet Hardware",
+        "allocated": 350000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "MSRUAS community health outreach in Bengaluru peri-urban areas"
+      },
+      {
+        "category": "Open Access Publications & Conference Dissemination",
+        "allocated": 240000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-impact Lancet / BMC Public Health journal fees"
+      },
+      {
+        "category": "Institutional Overhead & Contingency",
+        "allocated": 200000,
+        "currency": "INR",
+        "status": "Under Review",
+        "remarks": "Dean's office discretionary fund"
+      }
+    ],
+    "total_budget_allocated": 2500000,
+    "currency": "INR",
+    "next_meeting": "Friday, September 04, 2026 at 10:30 AM IST",
+    "generated_at": "2026-08-21 08:11:45"
+  },
+  {
+    "meeting_id": "VRITTA-1787279328",
+    "title": "MSRUAS Digital Health Center: MoU with Dean & ICMR Grant Review",
+    "category": "consultancy",
+    "date": "2026-08-21",
+    "day": "Friday",
+    "formatted_date": "August 21, 2026",
+    "time": "10:30 AM IST",
+    "venue": "Board Room / MSRUAS Health Sciences Campus",
+    "chair": "Dr. G. Hari Prakash (Chair / Lead PI)",
+    "attendees": [
+      {
+        "id": "att-1",
+        "name": "Dr. G. Hari Prakash",
+        "role": "Principal Investigator & Chair",
+        "dept": "Dept. of Public Health & Digital Health Lead",
+        "email": "dr.hariprakash@msruas.ac.in"
+      },
+      {
+        "id": "att-2",
+        "name": "Prof. N. Ramanathan",
+        "role": "Dean of Faculty",
+        "dept": "Faculty of Life & Allied Health Sciences",
+        "email": "dean.lifesciences@msruas.ac.in"
+      },
+      {
+        "id": "att-3",
+        "name": "Dr. Shalini K.",
+        "role": "Associate Professor & Co-PI",
+        "dept": "Biostatistics & Research Methodology",
+        "email": "shalini.k@msruas.ac.in"
+      },
+      {
+        "id": "att-4",
+        "name": "Mr. Vignesh R.",
+        "role": "Senior Research Fellow (SRF)",
+        "dept": "Digital Health AI Lab",
+        "email": "vignesh.research@msruas.ac.in"
+      }
+    ],
+    "agenda_items": [
+      "MoU ratification and governance alignment",
+      "Budget allocations across compute nodes and research staff",
+      "Field deployment and clinical data protocol finalization"
+    ],
+    "executive_summary": [
+      "The meeting was convened under the chairmanship of Dr. G. Hari Prakash (Chair / Lead PI) on Friday, August 21, 2026 to deliberate on strategic milestones, execution roadmaps, and resource governance.",
+      "All present members unanimously ratified the proposed execution blueprint and approved a total resource allocation of INR 1,200,000.",
+      "Specific accountability owners and rigorous milestone deadlines were assigned across ethical clearances, infrastructure hosting, research personnel recruitment, and client deliverables.",
+      "The committee affirmed its commitment to high-rigor standards, scheduled weekly asynchronous tracking, and set the next formal review for the subsequent cycle."
+    ],
+    "decisions_logged": [
+      "Formal approval granted for the comprehensive project methodology and execution timeline.",
+      "Resource allocation of INR 1,200,000 formally endorsed and sanctioned.",
+      "Dedicated task force constituted with assigned responsibilities and strict time-bound deliverables.",
+      "Agreement reached on ethical compliances, data security governance, and multi-stakeholder reporting protocols."
+    ],
+    "discussion_sections": [
+      {
+        "topic": "1. Opening Remarks & Review of Agenda",
+        "summary": "The Chair, Dr. G. Hari Prakash (Chair / Lead PI), welcomed the esteemed members and outlined the paramount strategic objectives. The agenda was formally adopted without amendments."
+      },
+      {
+        "topic": "2. Technical & Research Roadmap Deliberations",
+        "summary": "Detailed discussions were held on data architectures, clinical validation protocols, AI modeling pipelines, and community outreach frameworks. Consensus was reached on adopting high-availability infrastructure."
+      },
+      {
+        "topic": "3. Budget, Grants & Resource Allocation Review",
+        "summary": "The financial committee reviewed the itemized cost breakdown. Approved expenditures total INR 1,200,000 across hardware, human resources, field execution, and dissemination."
+      },
+      {
+        "topic": "4. Governance, Risk Mitigation & Next Steps",
+        "summary": "Potential operational bottlenecks were evaluated with mitigation safeguards. All members agreed on continuous audit mechanisms and bi-weekly milestone checkpoints."
+      }
+    ],
+    "action_items": [
+      {
+        "id": "ACT-01",
+        "task": "Deliver Alpha milestone build and API documentation to the client steering committee.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-08-30",
+        "priority": "Critical",
+        "status": "In Progress"
+      },
+      {
+        "id": "ACT-02",
+        "task": "Complete security audit and sign off on HIPAA & GDPR compliance certification.",
+        "assignee": "Prof. N. Ramanathan",
+        "email": "dean.lifesciences@msruas.ac.in",
+        "deadline": "2026-09-08",
+        "priority": "High",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-03",
+        "task": "Issue initial 40% mobilization advance invoice and schedule Phase 2 sprint kickoff.",
+        "assignee": "Dr. Shalini K.",
+        "email": "shalini.k@msruas.ac.in",
+        "deadline": "2026-09-15",
+        "priority": "Medium",
+        "status": "Pending"
+      }
+    ],
+    "budget_allocations": [
+      {
+        "category": "Operational & Infrastructure Expenses",
+        "allocated": 450000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Core system licensing"
+      },
+      {
+        "category": "Human Resources & Specialist Retainers",
+        "allocated": 600000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Domain experts and project leads"
+      },
+      {
+        "category": "Contingency & Discretionary Fund",
+        "allocated": 150000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Buffer allocation"
+      }
+    ],
+    "total_budget_allocated": 1200000,
+    "currency": "INR",
+    "next_meeting": "Friday, September 04, 2026 at 10:30 AM IST",
+    "generated_at": "2026-08-21 07:58:48"
+  },
+  {
+    "meeting_id": "VRITTA-1787278982",
+    "title": "Strengthening & Transitioning the MPH Programme into RSPH",
+    "category": "academic",
+    "date": "2026-08-21",
+    "day": "Friday",
+    "formatted_date": "August 21, 2026",
+    "time": "10:30 AM IST",
+    "venue": "Board Room / MSRUAS Health Sciences Campus",
+    "chair": "Dr. B. S. Nanda Kumar · Dean (I/C), RSPH",
+    "attendees": [
+      {
+        "id": "att-1",
+        "name": "Dr. B. S. Nanda Kumar",
+        "role": "Dean (I/C), RSPH & Chair",
+        "dept": "Ramaiah School of Public Health",
+        "email": "dean.rsph@msruas.ac.in"
+      },
+      {
+        "id": "att-2",
+        "name": "Dr. G. Hari Prakash",
+        "role": "Assistant Professor & Member Secretary",
+        "dept": "Dept. of Public Health & Digital Health Lead",
+        "email": "dr.hariprakash@msruas.ac.in"
+      },
+      {
+        "id": "att-3",
+        "name": "Prof. N. Ramanathan",
+        "role": "Dean of Faculty",
+        "dept": "Faculty of Life & Allied Health Sciences",
+        "email": "dean.lifesciences@msruas.ac.in"
+      },
+      {
+        "id": "att-4",
+        "name": "Dr. Shalini K.",
+        "role": "Associate Professor",
+        "dept": "Biostatistics & Research Methodology",
+        "email": "shalini.k@msruas.ac.in"
+      }
+    ],
+    "agenda_items": [
+      "Constitute RSPH Steering Committee",
+      "Approve 10,000 sq. ft. dedicated infrastructure",
+      "Sanction 2 Assistant Professor posts",
+      "Formalise RMC linkages and international collaborations"
+    ],
+    "executive_summary": [
+      "The meeting was convened under the chairmanship of Dr. B. S. Nanda Kumar · Dean (I/C), RSPH on Friday, August 21, 2026 to deliberate on strategic milestones, execution roadmaps, and resource governance.",
+      "All present members unanimously ratified the proposed execution blueprint and approved a total resource allocation of INR 2,500,000.",
+      "Specific accountability owners and rigorous milestone deadlines were assigned across ethical clearances, infrastructure hosting, research personnel recruitment, and client deliverables.",
+      "The committee affirmed its commitment to high-rigor standards, scheduled weekly asynchronous tracking, and set the next formal review for the subsequent cycle."
+    ],
+    "decisions_logged": [
+      "Formal approval granted for the comprehensive project methodology and execution timeline.",
+      "Resource allocation of INR 2,500,000 formally endorsed and sanctioned.",
+      "Dedicated task force constituted with assigned responsibilities and strict time-bound deliverables.",
+      "Agreement reached on ethical compliances, data security governance, and multi-stakeholder reporting protocols."
+    ],
+    "discussion_sections": [
+      {
+        "topic": "1. Opening Remarks & Review of Agenda",
+        "summary": "The Chair, Dr. B. S. Nanda Kumar · Dean (I/C), RSPH, welcomed the esteemed members and outlined the paramount strategic objectives. The agenda was formally adopted without amendments."
+      },
+      {
+        "topic": "2. Technical & Research Roadmap Deliberations",
+        "summary": "Detailed discussions were held on data architectures, clinical validation protocols, AI modeling pipelines, and community outreach frameworks. Consensus was reached on adopting high-availability infrastructure."
+      },
+      {
+        "topic": "3. Budget, Grants & Resource Allocation Review",
+        "summary": "The financial committee reviewed the itemized cost breakdown. Approved expenditures total INR 2,500,000 across hardware, human resources, field execution, and dissemination."
+      },
+      {
+        "topic": "4. Governance, Risk Mitigation & Next Steps",
+        "summary": "Potential operational bottlenecks were evaluated with mitigation safeguards. All members agreed on continuous audit mechanisms and bi-weekly milestone checkpoints."
+      }
+    ],
+    "action_items": [
+      {
+        "id": "ACT-01",
+        "task": "Submit the finalized Institutional Ethics Committee (IEC) documentation and clinical trial registry dossier.",
+        "assignee": "Dr. B. S. Nanda Kumar",
+        "email": "dean.rsph@msruas.ac.in",
+        "deadline": "2026-08-28",
+        "priority": "Critical",
+        "status": "In Progress"
+      },
+      {
+        "id": "ACT-02",
+        "task": "Finalize MoU terms with Dean of Academics regarding GPU server hosting in the MSRUAS Digital Health Center.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-09-05",
+        "priority": "High",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-03",
+        "task": "Complete candidate screening for 2 Junior Research Fellows (JRF) in Public Health Epidemiology.",
+        "assignee": "Prof. N. Ramanathan",
+        "email": "dean.lifesciences@msruas.ac.in",
+        "deadline": "2026-09-12",
+        "priority": "Medium",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-04",
+        "task": "Deploy community field-survey tablets with offline encrypted sync for the peri-urban cohort study.",
+        "assignee": "Dr. B. S. Nanda Kumar",
+        "email": "dean.rsph@msruas.ac.in",
+        "deadline": "2026-09-20",
+        "priority": "High",
+        "status": "Pending"
+      }
+    ],
+    "budget_allocations": [
+      {
+        "category": "Cloud Computing & AI Servers (Digital Health Lab)",
+        "allocated": 750000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-throughput GPU nodes for epidemiology modeling"
+      },
+      {
+        "category": "Research Staff & Junior Research Fellows (JRF)",
+        "allocated": 960000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Stipends for 2 JRF positions for 12 months"
+      },
+      {
+        "category": "Field Data Collection & Tablet Hardware",
+        "allocated": 350000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "MSRUAS community health outreach in Bengaluru peri-urban areas"
+      },
+      {
+        "category": "Open Access Publications & Conference Dissemination",
+        "allocated": 240000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-impact Lancet / BMC Public Health journal fees"
+      },
+      {
+        "category": "Institutional Overhead & Contingency",
+        "allocated": 200000,
+        "currency": "INR",
+        "status": "Under Review",
+        "remarks": "Dean's office discretionary fund"
+      }
+    ],
+    "total_budget_allocated": 2500000,
+    "currency": "INR",
+    "next_meeting": "Friday, September 04, 2026 at 10:30 AM IST",
+    "generated_at": "2026-08-21 07:53:02"
+  },
+  {
+    "meeting_id": "VRITTA-1787278784",
+    "title": "Strengthening & Transitioning the MPH Programme into RSPH",
+    "category": "academic",
+    "date": "2026-08-21",
+    "day": "Friday",
+    "formatted_date": "August 21, 2026",
+    "time": "10:30 AM IST",
+    "venue": "Board Room / MSRUAS Health Sciences Campus",
+    "chair": "Dr. B. S. Nanda Kumar",
+    "attendees": [
+      {
+        "name": "Dr. B. S. Nanda Kumar",
+        "email": "dean.rsph@msruas.ac.in"
+      },
+      {
+        "name": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in"
+      }
+    ],
+    "agenda_items": [
+      "Research Roadmap & Clinical Trial Protocol",
+      "Resource Allocations & Grants",
+      "Institutional Milestones"
+    ],
+    "executive_summary": [
+      "The meeting was convened under the chairmanship of Dr. B. S. Nanda Kumar on Friday, August 21, 2026 to deliberate on strategic milestones, execution roadmaps, and resource governance.",
+      "All present members unanimously ratified the proposed execution blueprint and approved a total resource allocation of INR 2,500,000.",
+      "Specific accountability owners and rigorous milestone deadlines were assigned across ethical clearances, infrastructure hosting, research personnel recruitment, and client deliverables.",
+      "The committee affirmed its commitment to high-rigor standards, scheduled weekly asynchronous tracking, and set the next formal review for the subsequent cycle."
+    ],
+    "decisions_logged": [
+      "Formal approval granted for the comprehensive project methodology and execution timeline.",
+      "Resource allocation of INR 2,500,000 formally endorsed and sanctioned.",
+      "Dedicated task force constituted with assigned responsibilities and strict time-bound deliverables.",
+      "Agreement reached on ethical compliances, data security governance, and multi-stakeholder reporting protocols."
+    ],
+    "discussion_sections": [
+      {
+        "topic": "1. Opening Remarks & Review of Agenda",
+        "summary": "The Chair, Dr. B. S. Nanda Kumar, welcomed the esteemed members and outlined the paramount strategic objectives. The agenda was formally adopted without amendments."
+      },
+      {
+        "topic": "2. Technical & Research Roadmap Deliberations",
+        "summary": "Detailed discussions were held on data architectures, clinical validation protocols, AI modeling pipelines, and community outreach frameworks. Consensus was reached on adopting high-availability infrastructure."
+      },
+      {
+        "topic": "3. Budget, Grants & Resource Allocation Review",
+        "summary": "The financial committee reviewed the itemized cost breakdown. Approved expenditures total INR 2,500,000 across hardware, human resources, field execution, and dissemination."
+      },
+      {
+        "topic": "4. Governance, Risk Mitigation & Next Steps",
+        "summary": "Potential operational bottlenecks were evaluated with mitigation safeguards. All members agreed on continuous audit mechanisms and bi-weekly milestone checkpoints."
+      }
+    ],
+    "action_items": [
+      {
+        "id": "ACT-01",
+        "task": "Submit the finalized Institutional Ethics Committee (IEC) documentation and clinical trial registry dossier.",
+        "assignee": "Dr. B. S. Nanda Kumar",
+        "email": "dean.rsph@msruas.ac.in",
+        "deadline": "2026-08-28",
+        "priority": "Critical",
+        "status": "In Progress"
+      },
+      {
+        "id": "ACT-02",
+        "task": "Finalize MoU terms with Dean of Academics regarding GPU server hosting in the MSRUAS Digital Health Center.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-09-05",
+        "priority": "High",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-03",
+        "task": "Complete candidate screening for 2 Junior Research Fellows (JRF) in Public Health Epidemiology.",
+        "assignee": "Research Associate / Scholar",
+        "email": "research.lead@msruas.ac.in",
+        "deadline": "2026-09-12",
+        "priority": "Medium",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-04",
+        "task": "Deploy community field-survey tablets with offline encrypted sync for the peri-urban cohort study.",
+        "assignee": "Dr. B. S. Nanda Kumar",
+        "email": "dean.rsph@msruas.ac.in",
+        "deadline": "2026-09-20",
+        "priority": "High",
+        "status": "Pending"
+      }
+    ],
+    "budget_allocations": [
+      {
+        "category": "Cloud Computing & AI Servers (Digital Health Lab)",
+        "allocated": 750000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-throughput GPU nodes for epidemiology modeling"
+      },
+      {
+        "category": "Research Staff & Junior Research Fellows (JRF)",
+        "allocated": 960000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Stipends for 2 JRF positions for 12 months"
+      },
+      {
+        "category": "Field Data Collection & Tablet Hardware",
+        "allocated": 350000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "MSRUAS community health outreach in Bengaluru peri-urban areas"
+      },
+      {
+        "category": "Open Access Publications & Conference Dissemination",
+        "allocated": 240000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-impact Lancet / BMC Public Health journal fees"
+      },
+      {
+        "category": "Institutional Overhead & Contingency",
+        "allocated": 200000,
+        "currency": "INR",
+        "status": "Under Review",
+        "remarks": "Dean's office discretionary fund"
+      }
+    ],
+    "total_budget_allocated": 2500000,
+    "currency": "INR",
+    "next_meeting": "Friday, September 04, 2026 at 10:30 AM IST",
+    "generated_at": "2026-08-21 07:49:44"
+  },
+  {
+    "meeting_id": "VRITTA-1787276695",
+    "title": "MSRUAS Digital Health Center: MoU with Dean of Academics & ICMR Grant Allocation",
+    "category": "academic",
+    "date": "2026-08-21",
+    "day": "Friday",
+    "formatted_date": "August 21, 2026",
+    "time": "10:30 AM IST",
+    "venue": "Dean's Boardroom / Hybrid Video Conference",
+    "chair": "Dr. G. Hari Prakash (Assistant Professor of Public Health, MSRUAS)",
+    "attendees": [
+      {
+        "id": "att-1",
+        "name": "Dr. G. Hari Prakash",
+        "role": "Principal Investigator / Chair",
+        "email": "dr.hariprakash@msruas.ac.in"
+      },
+      {
+        "id": "att-2",
+        "name": "Prof. N. Ramanathan",
+        "role": "Dean of Faculty of Life Sciences",
+        "email": "dean.lifesciences@msruas.ac.in"
+      },
+      {
+        "id": "att-3",
+        "name": "Dr. Shalini K.",
+        "role": "Co-Investigator / Assoc. Professor",
+        "email": "shalini.k@msruas.ac.in"
+      },
+      {
+        "id": "att-4",
+        "name": "Mr. Vignesh R.",
+        "role": "Senior Research Fellow (SRF)",
+        "email": "vignesh.research@msruas.ac.in"
+      }
+    ],
+    "agenda_items": [
+      "MSRUAS Digital Health Center Execution Strategy",
+      "MoU Terms with Dean of Academics & Infrastructure Hosting",
+      "ICMR / Institutional Grants & Budget Allocation Ledger",
+      "Ethical Approvals, Cohort Selection & Future Action Milestones"
+    ],
+    "executive_summary": [
+      "The meeting was convened under the chairmanship of Dr. G. Hari Prakash (Assistant Professor of Public Health, MSRUAS) on Friday, August 21, 2026 to deliberate on strategic milestones, execution roadmaps, and resource governance.",
+      "All present members unanimously ratified the proposed execution blueprint and approved a total resource allocation of INR 2,500,000.",
+      "Specific accountability owners and rigorous milestone deadlines were assigned across ethical clearances, infrastructure hosting, research personnel recruitment, and client deliverables.",
+      "The committee affirmed its commitment to high-rigor standards, scheduled weekly asynchronous tracking, and set the next formal review for the subsequent cycle."
+    ],
+    "decisions_logged": [
+      "Formal approval granted for the comprehensive project methodology and execution timeline.",
+      "Resource allocation of INR 2,500,000 formally endorsed and sanctioned.",
+      "Dedicated task force constituted with assigned responsibilities and strict time-bound deliverables.",
+      "Agreement reached on ethical compliances, data security governance, and multi-stakeholder reporting protocols."
+    ],
+    "discussion_sections": [
+      {
+        "topic": "1. Opening Remarks & Review of Agenda",
+        "summary": "The Chair, Dr. G. Hari Prakash (Assistant Professor of Public Health, MSRUAS), welcomed the esteemed members and outlined the paramount strategic objectives. The agenda was formally adopted without amendments."
+      },
+      {
+        "topic": "2. Technical & Research Roadmap Deliberations",
+        "summary": "Detailed discussions were held on data architectures, clinical validation protocols, AI modeling pipelines, and community outreach frameworks. Consensus was reached on adopting high-availability infrastructure."
+      },
+      {
+        "topic": "3. Budget, Grants & Resource Allocation Review",
+        "summary": "The financial committee reviewed the itemized cost breakdown. Approved expenditures total INR 2,500,000 across hardware, human resources, field execution, and dissemination."
+      },
+      {
+        "topic": "4. Governance, Risk Mitigation & Next Steps",
+        "summary": "Potential operational bottlenecks were evaluated with mitigation safeguards. All members agreed on continuous audit mechanisms and bi-weekly milestone checkpoints."
+      }
+    ],
+    "action_items": [
+      {
+        "id": "ACT-01",
+        "task": "Submit the finalized Institutional Ethics Committee (IEC) documentation and clinical trial registry dossier.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-08-28",
+        "priority": "Critical",
+        "status": "In Progress"
+      },
+      {
+        "id": "ACT-02",
+        "task": "Finalize MoU terms with Dean of Academics regarding GPU server hosting in the MSRUAS Digital Health Center.",
+        "assignee": "Prof. N. Ramanathan",
+        "email": "dean.lifesciences@msruas.ac.in",
+        "deadline": "2026-09-05",
+        "priority": "High",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-03",
+        "task": "Complete candidate screening for 2 Junior Research Fellows (JRF) in Public Health Epidemiology.",
+        "assignee": "Dr. Shalini K.",
+        "email": "shalini.k@msruas.ac.in",
+        "deadline": "2026-09-12",
+        "priority": "Medium",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-04",
+        "task": "Deploy community field-survey tablets with offline encrypted sync for the peri-urban cohort study.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-09-20",
+        "priority": "High",
+        "status": "Pending"
+      }
+    ],
+    "budget_allocations": [
+      {
+        "category": "Cloud Computing & AI Servers (Digital Health Lab)",
+        "allocated": 750000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-throughput GPU nodes for epidemiology modeling"
+      },
+      {
+        "category": "Research Staff & Junior Research Fellows (JRF)",
+        "allocated": 960000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Stipends for 2 JRF positions for 12 months"
+      },
+      {
+        "category": "Field Data Collection & Tablet Hardware",
+        "allocated": 350000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "MSRUAS community health outreach in Bengaluru peri-urban areas"
+      },
+      {
+        "category": "Open Access Publications & Conference Dissemination",
+        "allocated": 240000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-impact Lancet / BMC Public Health journal fees"
+      },
+      {
+        "category": "Institutional Overhead & Contingency",
+        "allocated": 200000,
+        "currency": "INR",
+        "status": "Under Review",
+        "remarks": "Dean's office discretionary fund"
+      }
+    ],
+    "total_budget_allocated": 2500000,
+    "currency": "INR",
+    "next_meeting": "Friday, September 04, 2026 at 10:30 AM IST",
+    "generated_at": "2026-08-21 07:14:55"
+  },
+  {
+    "meeting_id": "VRITTA-1787275682",
+    "title": "MSRUAS Public Health & Digital Health Grant Review",
+    "category": "academic",
+    "date": "2026-08-21",
+    "day": "Friday",
+    "formatted_date": "August 21, 2026",
+    "time": "10:30 AM IST",
+    "venue": "Deans Boardroom",
+    "chair": "Dr. G. Hari Prakash",
+    "attendees": [
+      {
+        "name": "Dr. G. Hari Prakash",
+        "role": "Principal Investigator",
+        "email": "dr.hariprakash@msruas.ac.in"
+      },
+      {
+        "name": "Prof. N. Ramanathan",
+        "role": "Dean of Faculty",
+        "email": "dean.lifesciences@msruas.ac.in"
+      }
+    ],
+    "agenda_items": [
+      "Research Roadmap & Clinical Trial Protocol",
+      "Resource Allocations & Grants",
+      "Institutional Milestones"
+    ],
+    "executive_summary": [
+      "The meeting was convened under the chairmanship of Dr. G. Hari Prakash on Friday, August 21, 2026 to deliberate on strategic milestones, execution roadmaps, and resource governance.",
+      "All present members unanimously ratified the proposed execution blueprint and approved a total resource allocation of INR 2,500,000.",
+      "Specific accountability owners and rigorous milestone deadlines were assigned across ethical clearances, infrastructure hosting, research personnel recruitment, and client deliverables.",
+      "The committee affirmed its commitment to high-rigor standards, scheduled weekly asynchronous tracking, and set the next formal review for the subsequent cycle."
+    ],
+    "decisions_logged": [
+      "Formal approval granted for the comprehensive project methodology and execution timeline.",
+      "Resource allocation of INR 2,500,000 formally endorsed and sanctioned.",
+      "Dedicated task force constituted with assigned responsibilities and strict time-bound deliverables.",
+      "Agreement reached on ethical compliances, data security governance, and multi-stakeholder reporting protocols."
+    ],
+    "discussion_sections": [
+      {
+        "topic": "1. Opening Remarks & Review of Agenda",
+        "summary": "The Chair, Dr. G. Hari Prakash, welcomed the esteemed members and outlined the paramount strategic objectives. The agenda was formally adopted without amendments."
+      },
+      {
+        "topic": "2. Technical & Research Roadmap Deliberations",
+        "summary": "Detailed discussions were held on data architectures, clinical validation protocols, AI modeling pipelines, and community outreach frameworks. Consensus was reached on adopting high-availability infrastructure."
+      },
+      {
+        "topic": "3. Budget, Grants & Resource Allocation Review",
+        "summary": "The financial committee reviewed the itemized cost breakdown. Approved expenditures total INR 2,500,000 across hardware, human resources, field execution, and dissemination."
+      },
+      {
+        "topic": "4. Governance, Risk Mitigation & Next Steps",
+        "summary": "Potential operational bottlenecks were evaluated with mitigation safeguards. All members agreed on continuous audit mechanisms and bi-weekly milestone checkpoints."
+      }
+    ],
+    "action_items": [
+      {
+        "id": "ACT-01",
+        "task": "Submit the finalized Institutional Ethics Committee (IEC) documentation and clinical trial registry dossier.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-08-28",
+        "priority": "Critical",
+        "status": "In Progress"
+      },
+      {
+        "id": "ACT-02",
+        "task": "Finalize MoU terms with Dean of Academics regarding GPU server hosting in the MSRUAS Digital Health Center.",
+        "assignee": "Prof. N. Ramanathan",
+        "email": "dean.lifesciences@msruas.ac.in",
+        "deadline": "2026-09-05",
+        "priority": "High",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-03",
+        "task": "Complete candidate screening for 2 Junior Research Fellows (JRF) in Public Health Epidemiology.",
+        "assignee": "Research Associate / Scholar",
+        "email": "research.lead@msruas.ac.in",
+        "deadline": "2026-09-12",
+        "priority": "Medium",
+        "status": "Pending"
+      },
+      {
+        "id": "ACT-04",
+        "task": "Deploy community field-survey tablets with offline encrypted sync for the peri-urban cohort study.",
+        "assignee": "Dr. G. Hari Prakash",
+        "email": "dr.hariprakash@msruas.ac.in",
+        "deadline": "2026-09-20",
+        "priority": "High",
+        "status": "Pending"
+      }
+    ],
+    "budget_allocations": [
+      {
+        "category": "Cloud Computing & AI Servers (Digital Health Lab)",
+        "allocated": 750000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-throughput GPU nodes for epidemiology modeling"
+      },
+      {
+        "category": "Research Staff & Junior Research Fellows (JRF)",
+        "allocated": 960000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "Stipends for 2 JRF positions for 12 months"
+      },
+      {
+        "category": "Field Data Collection & Tablet Hardware",
+        "allocated": 350000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "MSRUAS community health outreach in Bengaluru peri-urban areas"
+      },
+      {
+        "category": "Open Access Publications & Conference Dissemination",
+        "allocated": 240000,
+        "currency": "INR",
+        "status": "Approved",
+        "remarks": "High-impact Lancet / BMC Public Health journal fees"
+      },
+      {
+        "category": "Institutional Overhead & Contingency",
+        "allocated": 200000,
+        "currency": "INR",
+        "status": "Under Review",
+        "remarks": "Dean's office discretionary fund"
+      }
+    ],
+    "total_budget_allocated": 2500000,
+    "currency": "INR",
+    "next_meeting": "Friday, September 04, 2026 at 10:30 AM IST",
+    "generated_at": "2026-08-21 06:58:02"
+  }
+]

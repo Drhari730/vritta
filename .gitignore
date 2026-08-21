@@ -1,0 +1,21 @@
+# Python & temporary files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Logs & temp stores
+*.log
+.tempmediaStorage/
+.user_uploaded/
+scratch/
+browser/
+
+# OS files
+.DS_Store
+Thumbs.db

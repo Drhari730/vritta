@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="msruasGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#880E4F"/>
+      <stop offset="45%" stop-color="#C2185B"/>
+      <stop offset="85%" stop-color="#E64A19"/>
+      <stop offset="100%" stop-color="#F5511E"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Shield Border Path -->
+  <path d="M 22 18 
+           Q 50 12 76 18 
+           C 78 45 76 75 50 110 
+           C 24 75 22 45 22 18 Z" 
+        fill="none" stroke="url(#msruasGrad)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Top Arc Bar -->
+  <path d="M 24 12 Q 50 6 74 12" fill="none" stroke="url(#msruasGrad)" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Top Right Asterisk / Star -->
+  <g transform="translate(82, 14)" stroke="url(#msruasGrad)" stroke-width="3" stroke-linecap="round">
+    <line x1="-5" y1="0" x2="5" y2="0"/>
+    <line x1="0" y1="-5" x2="0" y2="5"/>
+    <line x1="-3.5" y1="-3.5" x2="3.5" y2="3.5"/>
+    <line x1="-3.5" y1="3.5" x2="3.5" y2="-3.5"/>
+  </g>
+
+  <!-- Left Swan Neck Curve -->
+  <path d="M 30 75 
+           C 30 50 34 30 52 30 
+           C 62 30 60 40 45 42 
+           C 38 43 36 50 36 60 
+           C 36 70 42 75 50 72" 
+        fill="none" stroke="url(#msruasGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Diagonal Rays / Stripes -->
+  <path d="M 32 82 Q 50 65 72 45" fill="none" stroke="url(#msruasGrad)" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M 36 90 Q 55 72 74 54" fill="none" stroke="url(#msruasGrad)" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M 42 98 Q 58 80 74 63" fill="none" stroke="url(#msruasGrad)" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M 47 104 Q 60 88 74 72" fill="none" stroke="url(#msruasGrad)" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M 50 42 Q 62 36 74 30" fill="none" stroke="url(#msruasGrad)" stroke-width="4.5" stroke-linecap="round"/>
+</svg>
