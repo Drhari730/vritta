@@ -177,11 +177,11 @@
   $('attName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('attRole').focus(); } });
 
   $('resetMeetingBtn').addEventListener('click', () => {
-    if (state.segments.length || state.title) {
-      if (!confirm('Start a fresh meeting? Any unsaved changes to the current one will be cleared.')) return;
-    }
+    // Only warn when there is unsaved work; after saving, jump straight to fresh.
+    const unsaved = state.segments.length && !state.savedAt;
+    if (unsaved && !confirm('Start a fresh meeting? Unsaved changes to the current one will be cleared.')) return;
     resetMeeting();
-    toast('New meeting started');
+    toast('New meeting — ready to record');
   });
 
   function resetMeeting() {
@@ -192,6 +192,7 @@
       segments: [], summary: '', discussionEdited: '', decisions: [], actions: [], approvedBy: '', savedAt: null
     });
     currentSpeaker = '';
+    sessionHasRecorded = false;
     $('mDate').value = state.date;
     loadDetailsToForm();
     renderAttendeeChips();
@@ -199,6 +200,10 @@
     renderTranscript();
     showMinutesEmpty(true);
     localStorage.removeItem(DRAFT_KEY);
+    $('recStatus').textContent = 'Tap start and allow microphone access. Best in Chrome or Edge.';
+    $('recTimer').textContent = '00:00:00';
+    switchTab('tab-new');
+    $('mTitle').focus();
   }
 
   /* ==========================================================================
@@ -227,7 +232,7 @@
     const dpr = window.devicePixelRatio || 1;
     if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) sizeCanvas();
     cctx.clearRect(0, 0, w, h);
-    wavePhase += 0.045;
+    wavePhase += 0.06;
 
     let samples = null, loud = 0;
     if (rec.active && analyser && timeData) {
@@ -239,17 +244,19 @@
       loud = Math.sqrt(sum / (samples.length / 16));
     }
 
-    // amplitude the wave swings to
-    const targetAmp = rec.active ? Math.max(0.10, Math.min(1, loud * 3.2)) : 0.12;
+    // amplitude the wave swings to (livelier idle so it always looks alive)
+    const targetAmp = rec.active ? Math.max(0.12, Math.min(1, loud * 3.2)) : 0.34;
     idleEnv += (targetAmp - idleEnv) * 0.2;
 
-    // value at horizontal position x (0..1): real audio when recording, else a lively idle sine
+    // value at horizontal position x (0..1): real audio when recording, else a lively idle wave
     function valueAt(fx) {
       if (samples) {
         const idx = Math.floor(fx * (samples.length - 1));
         return (samples[idx] - 128) / 128;
       }
-      return Math.sin(fx * 9 + wavePhase * 2.2) * 0.6 + Math.sin(fx * 22 - wavePhase * 1.3) * 0.25;
+      return Math.sin(fx * 7 + wavePhase * 2.6) * 0.7
+           + Math.sin(fx * 16 - wavePhase * 1.7) * 0.35
+           + Math.sin(fx * 30 + wavePhase * 3.3) * 0.16;
     }
 
     function stroke(ampScale, color, lw, blur) {
@@ -295,6 +302,11 @@
     restartTimer: null
   };
 
+  // True once a recording has happened in THIS page session. A transcript that
+  // is present without this flag came from a reload / saved / opened meeting,
+  // so pressing record should start it fresh rather than append.
+  let sessionHasRecorded = false;
+
   const recordBtn = $('recordBtn');
   const recordLabel = $('recordLabel');
   const recStatus = $('recStatus');
@@ -304,6 +316,16 @@
   recordBtn.addEventListener('click', () => rec.active ? stopRecording() : startRecording());
 
   async function startRecording() {
+    // Recording after a saved/loaded/reloaded meeting starts a brand-new one,
+    // so the new transcript & minutes are clean (details are kept to reuse/edit).
+    if (!sessionHasRecorded && (state.segments.length || state.savedAt)) {
+      state.id = null; state.savedAt = null;
+      state.segments = []; state.discussionEdited = '';
+      state.summary = ''; state.decisions = []; state.actions = []; state.approvedBy = '';
+      renderTranscript();
+      showMinutesEmpty(true);
+      $('tbSavedState').textContent = 'Unsaved draft';
+    }
     if (!SpeechRecognition) {
       toast('Live speech needs Chrome or Edge', 'err');
       recStatus.textContent = 'This browser has no built-in speech recognition. Use Chrome or Edge, or type the transcript directly below.';
@@ -328,6 +350,7 @@
     }
 
     rec.active = true;
+    sessionHasRecorded = true;
     rec.startedAt = Date.now();
     recordBtn.classList.add('recording');
     recordLabel.textContent = 'Stop recording';
@@ -846,6 +869,7 @@
       const out = await api('/api/vritta/meetings', { method: 'POST', body: JSON.stringify(rec) });
       state.savedAt = out.savedAt || state.savedAt;
       localStorage.removeItem(DRAFT_KEY);
+      sessionHasRecorded = false;   // next recording begins a fresh meeting
       $('tbSavedState').textContent = 'Saved to your account · ' + new Date(state.savedAt).toLocaleString();
       toast('Saved to your account', 'ok');
     } catch (err) {
@@ -874,6 +898,7 @@
     try { d = JSON.parse(localStorage.getItem(DRAFT_KEY)); } catch (e) { return; }
     if (!d || (!d.title && !(d.segments && d.segments.length))) return;
     Object.assign(state, d);
+    sessionHasRecorded = false;
     $('mDate').value = state.date || new Date().toISOString().split('T')[0];
     loadDetailsToForm();
     renderAttendeeChips();
@@ -966,6 +991,7 @@
     if (!m) { toast('Could not open that meeting', 'err'); return; }
     Object.assign(state, JSON.parse(JSON.stringify(m)));
     currentSpeaker = '';
+    sessionHasRecorded = false;
     $('mDate').value = state.date || '';
     loadDetailsToForm();
     renderAttendeeChips();
