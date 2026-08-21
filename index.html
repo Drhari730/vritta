@@ -18,8 +18,18 @@
   <nav class="top-nav">
     <div class="top-nav-inner">
       <a href="#" class="brand">
+        <svg class="crest" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M32 3 L57 11 V32 C57 47 46 57 32 62 C18 57 7 47 7 32 V11 Z" fill="#faf6ef" stroke="#6d1f2a" stroke-width="2.5"/>
+          <circle cx="32" cy="23" r="7.5" fill="#c8992a"/>
+          <g stroke="#c8992a" stroke-width="2" stroke-linecap="round">
+            <line x1="32" y1="8" x2="32" y2="12"/><line x1="19" y1="23" x2="15" y2="23"/><line x1="49" y1="23" x2="45" y2="23"/>
+            <line x1="22" y1="13" x2="19" y2="10"/><line x1="42" y1="13" x2="45" y2="10"/>
+          </g>
+          <path d="M25 51 C23 45 27 41 33 42 C28 43 27 47 30 49" stroke="#6d1f2a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <ellipse cx="34" cy="50" rx="9" ry="4.3" fill="#6d1f2a"/>
+        </svg>
         <span class="brand-mark">V<span class="om">ṛ</span>itta</span>
-        <span class="brand-sub">Meeting Notes &amp; Minutes</span>
+        <span class="brand-sub">RUAS Meeting Minutes</span>
       </a>
       <div class="nav-tabs">
         <button class="nav-tab active" data-tab="tab-new">New Meeting</button>
@@ -139,6 +149,12 @@
                 <span id="recordLabel">Start recording</span>
               </button>
               <div class="rec-status" id="recStatus">Tap start and allow microphone access. Best in Chrome or Edge.</div>
+
+              <!-- Manual speaker tagging: tap who is speaking now so each line is labelled -->
+              <div class="speaker-bar">
+                <span class="sb-label">Speaking now — tap to label who's talking</span>
+                <div class="sb-chips" id="speakerChips"></div>
+              </div>
             </div>
 
             <!-- Live transcript -->
@@ -177,6 +193,18 @@
           <div class="doc" id="docSheet">
 
             <div class="doc-head">
+              <svg class="doc-crest" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M32 3 L57 11 V32 C57 47 46 57 32 62 C18 57 7 47 7 32 V11 Z" fill="#faf6ef" stroke="#6d1f2a" stroke-width="2.5"/>
+                <circle cx="32" cy="23" r="7.5" fill="#c8992a"/>
+                <g stroke="#c8992a" stroke-width="2" stroke-linecap="round">
+                  <line x1="32" y1="8" x2="32" y2="12"/><line x1="19" y1="23" x2="15" y2="23"/><line x1="49" y1="23" x2="45" y2="23"/>
+                  <line x1="22" y1="13" x2="19" y2="10"/><line x1="42" y1="13" x2="45" y2="10"/>
+                </g>
+                <path d="M25 51 C23 45 27 41 33 42 C28 43 27 47 30 49" stroke="#6d1f2a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                <ellipse cx="34" cy="50" rx="9" ry="4.3" fill="#6d1f2a"/>
+              </svg>
+              <div class="doc-univ">M. S. Ramaiah University of Applied Sciences</div>
+              <div class="doc-univ-sub">Bengaluru</div>
               <div class="doc-org" id="docOrg"></div>
               <div class="doc-owner">Minutes of Meeting</div>
               <div class="doc-tagline" id="docKaryavritta">कार्यवृत्त · Karyavṛtta</div>

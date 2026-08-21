@@ -60,12 +60,14 @@
     org: '',
     attendees: [],            // { name, role }
     agenda: '',               // raw textarea text
-    segments: [],             // { t: seconds, text }
+    segments: [],             // { t: seconds, text, speaker }
     summary: '',
     decisions: [],            // strings
     actions: [],              // { task, owner, due }
     savedAt: null
   };
+
+  let currentSpeaker = '';    // who is speaking "now" (manual tag; not persisted)
 
   /* ==========================================================================
      Tab navigation
@@ -110,7 +112,31 @@
         <span class="chip-x" data-i="${i}" title="Remove">&times;</span>
       </span>`).join('');
     box.querySelectorAll('.chip-x').forEach(x =>
-      x.addEventListener('click', () => { state.attendees.splice(+x.dataset.i, 1); renderAttendeeChips(); scheduleDraftSave(); }));
+      x.addEventListener('click', () => { state.attendees.splice(+x.dataset.i, 1); renderAttendeeChips(); renderSpeakerChips(); scheduleDraftSave(); }));
+  }
+
+  /* ---------- speaker tagging (manual "who is speaking") ---------- */
+  function speakerOptions() {
+    const names = state.attendees.map(a => a.name).filter(Boolean);
+    // Always offer a couple of generic speakers so labelling works before
+    // attendees are added, plus an explicit "Unknown".
+    const generic = ['Speaker 1', 'Speaker 2', 'Speaker 3'];
+    const list = names.length ? names.slice() : generic;
+    list.push('Unknown');
+    return list;
+  }
+  function renderSpeakerChips() {
+    const box = $('speakerChips');
+    if (!box) return;
+    const opts = speakerOptions();
+    if (currentSpeaker && !opts.includes(currentSpeaker)) currentSpeaker = '';
+    box.innerHTML = opts.map(n =>
+      `<button class="sb-chip${n === currentSpeaker ? ' active' : ''}" data-spk="${esc(n)}">${esc(n)}</button>`).join('');
+    box.querySelectorAll('.sb-chip').forEach(b =>
+      b.addEventListener('click', () => {
+        currentSpeaker = (currentSpeaker === b.dataset.spk) ? '' : b.dataset.spk;
+        renderSpeakerChips();
+      }));
   }
   function addAttendee() {
     const name = $('attName').value.trim();
@@ -119,7 +145,7 @@
     state.attendees.push({ name, role });
     $('attName').value = ''; $('attRole').value = '';
     $('attName').focus();
-    renderAttendeeChips(); scheduleDraftSave();
+    renderAttendeeChips(); renderSpeakerChips(); scheduleDraftSave();
   }
   $('addAttBtn').addEventListener('click', addAttendee);
   $('attRole').addEventListener('keydown', e => { if (e.key === 'Enter') addAttendee(); });
@@ -140,9 +166,11 @@
       chair: '', venue: '', org: '', attendees: [], agenda: '',
       segments: [], summary: '', decisions: [], actions: [], savedAt: null
     });
+    currentSpeaker = '';
     $('mDate').value = state.date;
     loadDetailsToForm();
     renderAttendeeChips();
+    renderSpeakerChips();
     renderTranscript();
     showMinutesEmpty(true);
     localStorage.removeItem(DRAFT_KEY);
@@ -267,7 +295,7 @@
             const clean = txt.trim();
             if (clean) {
               const t = (Date.now() - rec.startedAt) / 1000;
-              state.segments.push({ t, text: capitalise(clean) });
+              state.segments.push({ t, text: capitalise(clean), speaker: currentSpeaker || '' });
               renderTranscript();
               scheduleDraftSave();
             }
@@ -353,10 +381,15 @@
       return;
     }
     $('transcriptEmpty').style.display = 'none';
-    box.innerHTML = state.segments.map((s, i) => `
-      <div class="t-seg" data-i="${i}">
-        <span class="t-time">${fmtStamp(s.t)}</span><span class="t-text">${esc(s.text)}</span>
-      </div>`).join('');
+    box.innerHTML = state.segments.map((s, i) => {
+      const prev = state.segments[i - 1];
+      const changed = i === 0 || (prev && (prev.speaker || '') !== (s.speaker || ''));
+      const spk = s.speaker && changed ? `<span class="t-spk">${esc(s.speaker)}:</span>` : '';
+      return `
+      <div class="t-seg${s.speaker && changed ? ' spk-change' : ''}" data-i="${i}">
+        <span class="t-time">${fmtStamp(s.t)}</span>${spk}<span class="t-text">${esc(s.text)}</span>
+      </div>`;
+    }).join('');
     box.scrollTop = box.scrollHeight;
     $('transcriptBox').scrollTop = $('transcriptBox').scrollHeight;
   }
@@ -408,6 +441,32 @@
   }
   function transcriptText() { return state.segments.map(s => s.text).join(' '); }
 
+  // Group consecutive segments by the same speaker into turns.
+  function groupTurns(segments) {
+    const turns = [];
+    (segments || []).forEach(s => {
+      const spk = s.speaker || '';
+      const last = turns[turns.length - 1];
+      if (last && last.speaker === spk) last.text += ' ' + s.text;
+      else turns.push({ speaker: spk, text: s.text });
+    });
+    return turns;
+  }
+  function hasSpeakers(segments) { return (segments || []).some(s => s.speaker); }
+
+  function discussionHTML(segments) {
+    if (!(segments || []).length) return 'No transcript was recorded for this meeting.';
+    if (!hasSpeakers(segments)) return esc(segments.map(s => s.text).join(' '));
+    return groupTurns(segments).map(t =>
+      `<div class="disc-turn">${t.speaker ? `<span class="disc-spk">${esc(t.speaker)}:</span> ` : ''}${esc(t.text)}</div>`
+    ).join('');
+  }
+  function discussionPlain(segments) {
+    if (!(segments || []).length) return '';
+    if (!hasSpeakers(segments)) return segments.map(s => s.text).join(' ');
+    return groupTurns(segments).map(t => (t.speaker ? t.speaker + ': ' : '') + t.text).join('\n');
+  }
+
   function showMinutesEmpty(isEmpty) {
     $('minutesEmpty').style.display = isEmpty ? 'block' : 'none';
     $('minutesDoc').style.display = isEmpty ? 'none' : 'block';
@@ -452,9 +511,8 @@
     // 4. Summary
     $('docSummary').value = state.summary || '';
 
-    // 5. Discussion / transcript
-    const tt = transcriptText();
-    $('docTranscript').textContent = tt || 'No transcript was recorded for this meeting.';
+    // 5. Discussion / transcript (grouped by speaker when labelled)
+    $('docTranscript').innerHTML = discussionHTML(state.segments);
 
     // 6. Decisions
     renderDecisions();
@@ -592,6 +650,7 @@
     $('mDate').value = state.date || new Date().toISOString().split('T')[0];
     loadDetailsToForm();
     renderAttendeeChips();
+    renderSpeakerChips();
     renderTranscript();
     if (state.segments.length || state.summary || state.decisions.length || state.actions.length) {
       renderMinutes();
@@ -661,9 +720,11 @@
     const m = loadAll().find(x => x.id === id);
     if (!m) return;
     Object.assign(state, JSON.parse(JSON.stringify(m)));
+    currentSpeaker = '';
     $('mDate').value = state.date || '';
     loadDetailsToForm();
     renderAttendeeChips();
+    renderSpeakerChips();
     renderTranscript();
     renderMinutes();
     switchTab('tab-minutes');
@@ -714,7 +775,7 @@
      ========================================================================== */
   $('printBtn').addEventListener('click', () => {
     // Push editable field values into the printable DOM first.
-    $('docTranscript').textContent = transcriptText() || 'No transcript was recorded for this meeting.';
+    $('docTranscript').innerHTML = discussionHTML(state.segments);
     window.print();
   });
 
@@ -744,7 +805,7 @@
     const items = (m.agenda || '').split('\n').map(s => s.trim()).filter(Boolean);
     if (items.length) { L.push('AGENDA'); items.forEach((a, i) => L.push(` ${i + 1}. ${a}`)); L.push(''); }
     if (m.summary) { L.push('SUMMARY'); L.push(m.summary); L.push(''); }
-    const tt = (m.segments || []).map(s => s.text).join(' ');
+    const tt = discussionPlain(m.segments);
     if (tt) { L.push('DISCUSSION NOTES'); L.push(tt); L.push(''); }
     if ((m.decisions || []).length) { L.push('DECISIONS'); m.decisions.forEach((d, i) => L.push(` ${i + 1}. ${d}`)); L.push(''); }
     if ((m.actions || []).length) {
@@ -757,14 +818,16 @@
 
   function exportWord(m) {
     const items = (m.agenda || '').split('\n').map(s => s.replace(/^[\s\-•*\d.)]+/, '').trim()).filter(Boolean);
-    const tt = (m.segments || []).map(s => s.text).join(' ');
-    const NAVY = '#13294b', TEAL = '#1a6b6b', ACCENT = '#c05a2e';
+    const turns = (m.segments || []).length ? groupTurns(m.segments) : [];
+    const NAVY = '#6d1f2a', TEAL = '#9a7b1e', ACCENT = '#c8992a';
     const h = (n, t) => `<h2 style="font-family:Georgia,serif;font-size:13pt;color:${NAVY};border-bottom:1px solid #ccc;padding-bottom:3px;margin:16px 0 8px;"><span style="color:${ACCENT}">${n}.</span> ${esc(t)}</h2>`;
 
     let body = '';
-    body += `<div style="text-align:center;border-bottom:2px solid ${NAVY};padding-bottom:8px;margin-bottom:14px;">`;
-    if (m.org) body += `<div style="font-weight:bold;color:${NAVY};font-size:12pt;">${esc(m.org)}</div>`;
-    body += `<div style="font-family:Georgia,serif;font-size:20pt;font-weight:bold;color:${NAVY};">Minutes of Meeting</div>`;
+    body += `<div style="text-align:center;border-bottom:2px solid ${ACCENT};padding-bottom:8px;margin-bottom:14px;">`;
+    body += `<div style="font-weight:bold;color:${NAVY};font-size:13pt;">M. S. Ramaiah University of Applied Sciences</div>`;
+    body += `<div style="color:#7c6f6a;font-size:9pt;">Bengaluru</div>`;
+    if (m.org) body += `<div style="font-weight:bold;color:${NAVY};font-size:11pt;margin-top:2px;">${esc(m.org)}</div>`;
+    body += `<div style="font-family:Georgia,serif;font-size:20pt;font-weight:bold;color:${NAVY};margin-top:4px;">Minutes of Meeting</div>`;
     body += `<div style="letter-spacing:2px;color:${ACCENT};font-size:8pt;">कार्यवृत्त · KARYAVRITTA</div></div>`;
     body += `<div style="text-align:center;background:#f2f5f9;padding:8px;margin-bottom:14px;"><div style="font-family:Georgia,serif;font-size:14pt;font-weight:bold;color:${NAVY};">${esc(m.title || 'Untitled meeting')}</div></div>`;
 
@@ -786,7 +849,12 @@
     }
     if (items.length) { body += h(3, 'Agenda') + '<ol style="font-size:10.5pt;">' + items.map(i => `<li>${esc(i)}</li>`).join('') + '</ol>'; }
     if (m.summary) { body += h(4, 'Summary') + `<p style="font-size:10.5pt;line-height:1.6;">${esc(m.summary).replace(/\n/g, '<br>')}</p>`; }
-    if (tt) { body += h(5, 'Discussion notes') + `<p style="font-size:10.5pt;line-height:1.6;">${esc(tt)}</p>`; }
+    if (turns.length) {
+      body += h(5, 'Discussion notes');
+      body += turns.map(t =>
+        `<p style="font-size:10.5pt;line-height:1.6;margin:0 0 6px;">${t.speaker ? `<b style="color:${NAVY}">${esc(t.speaker)}:</b> ` : ''}${esc(t.text)}</p>`
+      ).join('');
+    }
     if ((m.decisions || []).length) { body += h(6, 'Decisions') + '<ol style="font-size:10.5pt;line-height:1.6;">' + m.decisions.map(d => `<li>${esc(d)}</li>`).join('') + '</ol>'; }
     if ((m.actions || []).length) {
       body += h(7, 'Action items');
@@ -815,6 +883,7 @@
      Init
      ========================================================================== */
   renderAttendeeChips();
+  renderSpeakerChips();
   renderTranscript();
   showMinutesEmpty(true);
   restoreDraft();
