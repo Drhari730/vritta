@@ -1,3 +1,7 @@
+# Executables & Binaries
+ffmpeg.exe
+*.exe
+
 # Python & temporary files
 __pycache__/
 *.py[cod]
