@@ -85,6 +85,7 @@
     discussionEdited: '',     // if the user edits the discussion text, it wins over segments
     decisions: [],            // strings
     actions: [],              // { task, owner, due, done }
+    approvedBy: '',           // name & designation shown in the "Approved by" sign-off
     savedAt: null
   };
 
@@ -188,7 +189,7 @@
     Object.assign(state, {
       id: null, title: '', date: new Date().toISOString().split('T')[0], time: '',
       chair: '', venue: '', org: '', attendees: [], agenda: '',
-      segments: [], summary: '', discussionEdited: '', decisions: [], actions: [], savedAt: null
+      segments: [], summary: '', discussionEdited: '', decisions: [], actions: [], approvedBy: '', savedAt: null
     });
     currentSpeaker = '';
     $('mDate').value = state.date;
@@ -205,7 +206,7 @@
      ========================================================================== */
   const canvas = $('waveCanvas');
   const cctx = canvas.getContext('2d');
-  let analyser = null, freqData = null, wavePhase = 0;
+  let analyser = null, freqData = null, timeData = null, wavePhase = 0;
 
   function sizeCanvas() {
     const r = canvas.parentElement.getBoundingClientRect();
@@ -216,9 +217,8 @@
   window.addEventListener('resize', sizeCanvas);
   sizeCanvas();
 
-  // Reactive bar-style waveform (the "wave pattern") — animated live from the mic.
-  const BARS = 48;
-  const barLevels = new Array(BARS).fill(0.06);
+  // Real oscilloscope-style waveform — a smooth line that reacts to the mic.
+  let idleEnv = 0.12;   // eased amplitude when idle / between words
   function drawWave() {
     const w = canvas.clientWidth, h = canvas.clientHeight, mid = h / 2;
     // Recorder canvas has zero size when its tab/login is covering it — skip.
@@ -227,48 +227,55 @@
     const dpr = window.devicePixelRatio || 1;
     if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) sizeCanvas();
     cctx.clearRect(0, 0, w, h);
-    wavePhase += 0.05;
+    wavePhase += 0.045;
 
-    let live = null;
-    if (rec.active && analyser && freqData) {
-      analyser.getByteFrequencyData(freqData);
-      live = freqData;
+    let samples = null, loud = 0;
+    if (rec.active && analyser && timeData) {
+      analyser.getByteTimeDomainData(timeData);
+      samples = timeData;
+      // overall loudness (RMS) to scale the idle wobble between words
+      let sum = 0;
+      for (let i = 0; i < samples.length; i += 16) { const v = (samples[i] - 128) / 128; sum += v * v; }
+      loud = Math.sqrt(sum / (samples.length / 16));
     }
 
-    const gap = 3;
-    const bw = (w - gap * (BARS - 1)) / BARS;
-    for (let i = 0; i < BARS; i++) {
-      let target;
-      if (live) {
-        // sample the low-mid band where speech lives
-        const idx = Math.floor((i / BARS) * (live.length * 0.7));
-        target = Math.max(0.06, (live[idx] / 255) * 1.15);
-      } else {
-        // gentle idle shimmer
-        target = 0.10 + 0.06 * (Math.sin(wavePhase + i * 0.5) * 0.5 + 0.5);
+    // amplitude the wave swings to
+    const targetAmp = rec.active ? Math.max(0.10, Math.min(1, loud * 3.2)) : 0.12;
+    idleEnv += (targetAmp - idleEnv) * 0.2;
+
+    // value at horizontal position x (0..1): real audio when recording, else a lively idle sine
+    function valueAt(fx) {
+      if (samples) {
+        const idx = Math.floor(fx * (samples.length - 1));
+        return (samples[idx] - 128) / 128;
       }
-      barLevels[i] += (target - barLevels[i]) * 0.35;
-      const bh = Math.max(3, barLevels[i] * (h - 8));
-      const x = i * (bw + gap);
-      const y = mid - bh / 2;
-      const grad = cctx.createLinearGradient(0, y, 0, y + bh);
-      grad.addColorStop(0, 'rgba(255,178,122,0.95)');   // orange
-      grad.addColorStop(1, 'rgba(232,84,30,0.85)');
-      cctx.fillStyle = rec.active ? grad : 'rgba(255,178,122,0.5)';
-      const r = Math.max(0, Math.min(bw / 2, 3));
-      roundRect(cctx, x, y, bw, bh, r);
-      cctx.fill();
+      return Math.sin(fx * 9 + wavePhase * 2.2) * 0.6 + Math.sin(fx * 22 - wavePhase * 1.3) * 0.25;
     }
+
+    function stroke(ampScale, color, lw, blur) {
+      cctx.beginPath();
+      const step = Math.max(1, Math.floor(w / 240));
+      for (let x = 0; x <= w; x += step) {
+        // taper the ends so the line fades into the box edges
+        const fx = x / w;
+        const taper = Math.sin(Math.PI * fx);
+        const y = mid + valueAt(fx) * idleEnv * (h * 0.42) * ampScale * taper;
+        x === 0 ? cctx.moveTo(x, y) : cctx.lineTo(x, y);
+      }
+      cctx.strokeStyle = color; cctx.lineWidth = lw;
+      cctx.lineJoin = 'round'; cctx.lineCap = 'round';
+      cctx.shadowBlur = blur; cctx.shadowColor = 'rgba(232,84,30,0.65)';
+      cctx.stroke();
+      cctx.shadowBlur = 0;
+    }
+
+    const on = rec.active;
+    // soft glow underlay
+    stroke(1.15, on ? 'rgba(255,150,90,0.35)' : 'rgba(214,199,230,0.35)', 7, on ? 14 : 0);
+    // crisp main line
+    stroke(1.0, on ? '#ff9a5a' : 'rgba(233,224,236,0.85)', 2.6, 0);
+
     requestAnimationFrame(drawWave);
-  }
-  function roundRect(ctx, x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r);
-    ctx.arcTo(x, y, x + w, y, r);
-    ctx.closePath();
   }
   requestAnimationFrame(drawWave);
 
@@ -309,9 +316,11 @@
       rec.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       const src = rec.audioCtx.createMediaStreamSource(rec.stream);
       analyser = rec.audioCtx.createAnalyser();
-      analyser.fftSize = 128;
+      analyser.fftSize = 2048;           // time-domain samples for a smooth waveform
+      analyser.smoothingTimeConstant = 0.85;
       src.connect(analyser);
       freqData = new Uint8Array(analyser.frequencyBinCount);
+      timeData = new Uint8Array(analyser.fftSize);
     } catch (err) {
       toast('Microphone blocked', 'err');
       recStatus.textContent = 'Microphone access was denied. Allow it in your browser’s address bar, or type the transcript below.';
@@ -402,7 +411,7 @@
     if (rec.recog) { try { rec.recog.onend = null; rec.recog.stop(); } catch (e) {} rec.recog = null; }
     if (rec.stream) { rec.stream.getTracks().forEach(t => t.stop()); rec.stream = null; }
     if (rec.audioCtx) { try { rec.audioCtx.close(); } catch (e) {} rec.audioCtx = null; }
-    analyser = null; freqData = null;
+    analyser = null; freqData = null; timeData = null;
     stopTimer();
     recordBtn.classList.remove('recording');
     recordLabel.textContent = 'Start recording';
@@ -583,7 +592,7 @@
 
     // Sign-off
     $('signPreparedName').textContent = state.chair ? state.chair : 'Prepared by';
-    $('signChairName').textContent = state.chair || 'Chair';
+    $('signApprovedName').textContent = state.approvedBy || '';
 
     $('tbSavedState').textContent = state.savedAt ? 'Saved · ' + new Date(state.savedAt).toLocaleString() : 'Unsaved draft';
   }
@@ -600,6 +609,11 @@
   // editable discussion notes (edits win over the raw transcript on export)
   $('docTranscript').addEventListener('input', e => {
     state.discussionEdited = e.target.innerText;
+    scheduleDraftSave();
+  });
+  // editable "Approved by" in the sign-off
+  $('signApprovedName').addEventListener('input', e => {
+    state.approvedBy = e.target.textContent.trim();
     scheduleDraftSave();
   });
   $('draftSummaryBtn').addEventListener('click', () => {
@@ -815,6 +829,7 @@
       segments: state.segments.slice(), summary: state.summary,
       discussionEdited: state.discussionEdited || '',
       decisions: state.decisions.slice(), actions: state.actions.slice(),
+      approvedBy: state.approvedBy || '',
       savedAt: state.savedAt
     };
   }
@@ -1199,7 +1214,7 @@
       m.actions.forEach(a => body += `<tr><td style="border:1px solid #ddd;padding:5px;">${esc(a.task)}</td><td style="border:1px solid #ddd;padding:5px;">${esc(a.owner || '—')}</td><td style="border:1px solid #ddd;padding:5px;">${a.due ? esc(prettyDate(a.due)) : '—'}</td></tr>`);
       body += '</table>';
     }
-    body += `<table style="width:100%;margin-top:40px;font-size:10pt;"><tr><td style="width:50%;">_____________________________<br><b>${esc(m.chair || 'Prepared by')}</b><br><span style="color:#666;">Minutes prepared with Vritta</span></td><td style="width:50%;">_____________________________<br><b>${esc(m.chair || 'Chair')}</b><br><span style="color:#666;">Approved</span></td></tr></table>`;
+    body += `<table style="width:100%;margin-top:40px;font-size:10pt;"><tr><td style="width:50%;">_____________________________<br><b>${esc(m.chair || 'Prepared by')}</b><br><span style="color:#666;">Minutes prepared with Vritta</span></td><td style="width:50%;">_____________________________<br><b>${esc(m.approvedBy || '')}</b><br><span style="color:#666;">Approved by</span></td></tr></table>`;
     return body;
   }
 
@@ -1275,6 +1290,8 @@
       ? `Dear all,\n\nYou are invited to "${title}"${state.date ? ' on ' + prettyDate(state.date) : ''}${state.time ? ' at ' + state.time : ''}. Details are below.\n\nRegards,\n${state.chair || ''}`.trim()
       : `Dear all,\n\nPlease find the minutes of "${title}" below.\n\nRegards,\n${state.chair || ''}`.trim();
     $('icsToggleRow').style.display = mode === 'invite' ? 'flex' : 'none';
+    $('approvedByRow').style.display = mode === 'minutes' ? 'block' : 'none';
+    if (mode === 'minutes') $('emailApprovedBy').value = state.approvedBy || '';
 
     const configured = session.emailConfigured;
     $('emailNotConfigured').style.display = configured ? 'none' : 'block';
@@ -1294,6 +1311,12 @@
     if (!recipients.length) { toast('Add at least one recipient', 'err'); return; }
     const subject = $('emailSubject').value.trim();
     const message = $('emailMessage').value.trim();
+    // For the MOM, capture the "Approved by" name so it appears in the sent minutes.
+    if (emailMode === 'minutes') {
+      state.approvedBy = $('emailApprovedBy').value.trim();
+      $('signApprovedName').textContent = state.approvedBy;
+      scheduleDraftSave();
+    }
     const intro = message ? `<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#241a2e;white-space:pre-wrap;">${esc(message)}</p>` : '';
     const html = intro + (emailMode === 'invite' ? inviteEmailHTML(state) : minutesEmailHTML(state));
     const withInvite = emailMode === 'invite' && $('emailAttachIcs').checked;
