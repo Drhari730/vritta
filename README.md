@@ -33,13 +33,12 @@ was said plus what you type. Email is really sent — no fake "delivery receipts
 
 ### Enabling email (one-time)
 
-In the Railway project, set environment variables:
+Vritta sends via **Resend** — the same service ScholarDesk uses. In the
+`hari-prakash-site` Railway project, set:
 
-- `SMTP_USER` — your Gmail address
-- `SMTP_PASS` — a Google **App Password** (Account → Security → App passwords), not your
-  normal password
-
-Host defaults to Gmail; override with `SMTP_HOST`/`SMTP_PORT`/`SMTP_FROM` if needed.
+- `RESEND_API_KEY` — copy from your ScholarDesk project's variables
+- `EMAIL_FROM` — copy from ScholarDesk (e.g. `Vritta <notify@yourdomain>`); optional,
+  falls back to Resend's shared sender
 
 ## Live transcription
 
