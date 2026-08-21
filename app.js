@@ -48,6 +48,26 @@
   }
 
   /* ==========================================================================
+     Server API + session
+     ========================================================================== */
+  const session = { email: null, emailConfigured: false };
+
+  async function api(path, opts) {
+    const res = await fetch(path, Object.assign({
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin'
+    }, opts));
+    let body = null;
+    try { body = await res.json(); } catch (e) {}
+    if (!res.ok) {
+      const err = new Error((body && body.error) || ('Request failed (' + res.status + ')'));
+      err.status = res.status; err.body = body;
+      throw err;
+    }
+    return body;
+  }
+
+  /* ==========================================================================
      State
      ========================================================================== */
   const state = {
@@ -108,7 +128,7 @@
     }
     box.innerHTML = state.attendees.map((a, i) => `
       <span class="chip" data-i="${i}">
-        <span>${esc(a.name)}${a.role ? ` <span class="chip-role">(${esc(a.role)})</span>` : ''}</span>
+        <span>${esc(a.name)}${a.role ? ` <span class="chip-role">(${esc(a.role)})</span>` : ''}${a.email ? ' <span class="chip-role" title="' + esc(a.email) + '">✉</span>' : ''}</span>
         <span class="chip-x" data-i="${i}" title="Remove">&times;</span>
       </span>`).join('');
     box.querySelectorAll('.chip-x').forEach(x =>
@@ -141,14 +161,16 @@
   function addAttendee() {
     const name = $('attName').value.trim();
     const role = $('attRole').value.trim();
+    const email = $('attEmail').value.trim();
     if (!name) { toast('Enter a name', 'err'); return; }
-    state.attendees.push({ name, role });
-    $('attName').value = ''; $('attRole').value = '';
+    state.attendees.push({ name, role, email });
+    $('attName').value = ''; $('attRole').value = ''; $('attEmail').value = '';
     $('attName').focus();
     renderAttendeeChips(); renderSpeakerChips(); scheduleDraftSave();
   }
   $('addAttBtn').addEventListener('click', addAttendee);
-  $('attRole').addEventListener('keydown', e => { if (e.key === 'Enter') addAttendee(); });
+  $('attEmail').addEventListener('keydown', e => { if (e.key === 'Enter') addAttendee(); });
+  $('attRole').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('attEmail').focus(); } });
   $('attName').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('attRole').focus(); } });
 
   $('resetMeetingBtn').addEventListener('click', () => {
@@ -592,13 +614,20 @@
   $('newActionTask').addEventListener('keydown', e => { if (e.key === 'Enter') addAction(); });
 
   /* ==========================================================================
-     Persistence — localStorage
+     Persistence — server account (with a local offline cache/fallback)
      ========================================================================== */
-  function loadAll() {
+  // Local cache mirrors the server list so the Journal still renders offline
+  // and nothing is lost if a save can't reach the server (e.g. weak signal).
+  function loadLocal() {
     try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
     catch (e) { return []; }
   }
-  function saveAll(list) { localStorage.setItem(STORE_KEY, JSON.stringify(list)); }
+  function saveLocal(list) { try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch (e) {} }
+  function cacheMeeting(rec) {
+    const list = loadLocal().filter(m => m.id !== rec.id);
+    list.unshift(rec);
+    saveLocal(list);
+  }
 
   function snapshot() {
     syncDetailsFromForm();
@@ -613,19 +642,24 @@
   }
 
   $('saveMeetingBtn').addEventListener('click', saveMeeting);
-  function saveMeeting() {
+  async function saveMeeting() {
     syncDetailsFromForm();
     if (!state.title.trim()) { toast('Add a meeting title first', 'err'); return; }
-    const list = loadAll();
-    state.savedAt = Date.now();
     if (!state.id) state.id = uid();
+    state.savedAt = Date.now();
     const rec = snapshot();
-    const idx = list.findIndex(m => m.id === state.id);
-    if (idx >= 0) list[idx] = rec; else list.unshift(rec);
-    saveAll(list);
-    localStorage.removeItem(DRAFT_KEY);
-    $('tbSavedState').textContent = 'Saved · ' + new Date(state.savedAt).toLocaleString();
-    toast('Meeting saved', 'ok');
+    cacheMeeting(rec);                       // always keep a local copy
+    try {
+      const out = await api('/api/vritta/meetings', { method: 'POST', body: JSON.stringify(rec) });
+      state.savedAt = out.savedAt || state.savedAt;
+      localStorage.removeItem(DRAFT_KEY);
+      $('tbSavedState').textContent = 'Saved to your account · ' + new Date(state.savedAt).toLocaleString();
+      toast('Saved to your account', 'ok');
+    } catch (err) {
+      if (err.status === 401) { toast('Please sign in to save', 'err'); showLogin(); return; }
+      $('tbSavedState').textContent = 'Saved offline (will sync when online)';
+      toast('Saved offline — could not reach the server', 'err');
+    }
   }
 
   /* ---------- draft autosave (so a refresh mid-meeting loses nothing) ---------- */
@@ -659,10 +693,25 @@
   }
 
   /* ==========================================================================
-     Saved meetings tab
+     Journal (server account, with offline cache fallback)
      ========================================================================== */
-  function renderSaved() {
-    const list = loadAll();
+  let journalCache = [];   // list view (no segments)
+
+  async function renderSaved() {
+    const box = $('savedList');
+    box.innerHTML = `<div class="empty-hint" style="padding:1rem;">Loading your journal…</div>`;
+    try {
+      journalCache = await api('/api/vritta/meetings');
+    } catch (err) {
+      if (err.status === 401) { showLogin(); return; }
+      journalCache = loadLocal();   // offline fallback
+      toast('Showing offline copy — could not reach the server', 'err');
+    }
+    paintSaved();
+  }
+
+  function paintSaved() {
+    const list = journalCache;
     const q = $('savedSearch').value.trim().toLowerCase();
     const filtered = !q ? list : list.filter(m => {
       const hay = [m.title, m.chair, m.org, m.venue,
@@ -674,7 +723,7 @@
 
     const box = $('savedList');
     if (!list.length) {
-      box.innerHTML = `<div class="minutes-empty" style="padding:2.5rem 1rem;"><p>No saved meetings yet. When you save a meeting it will appear here — stored privately in this browser.</p></div>`;
+      box.innerHTML = `<div class="minutes-empty" style="padding:2.5rem 1rem;"><p>No meetings in your journal yet. Record or type a meeting, build the minutes, then tap <strong>Save</strong> — it will be stored in your account and appear here on any device.</p></div>`;
       return;
     }
     if (!filtered.length) {
@@ -687,7 +736,8 @@
       const mm = isNaN(d) ? '' : d.toLocaleString('en-GB', { month: 'short' });
       const dd = isNaN(d) ? '·' : d.getDate();
       const yy = isNaN(d) ? '' : d.getFullYear();
-      const words = (m.segments || []).reduce((n, s) => n + s.text.split(/\s+/).length, 0);
+      const words = (typeof m.wordCount === 'number') ? m.wordCount
+        : (m.segments || []).reduce((n, s) => n + s.text.split(/\s+/).length, 0);
       return `
         <div class="saved-card">
           <div class="date-badge"><div class="m">${mm}</div><div class="d">${dd}</div><div class="y">${yy}</div></div>
@@ -699,26 +749,28 @@
               <span><strong>Attendees:</strong> ${(m.attendees || []).length}</span>
               <span><strong>Words:</strong> ${words}</span>
               ${(m.actions || []).length ? `<span><strong>Actions:</strong> ${m.actions.length}</span>` : ''}
+              ${m.savedAt ? `<span><strong>Saved:</strong> ${new Date(m.savedAt).toLocaleDateString()}</span>` : ''}
             </div>
           </div>
           <div class="saved-actions">
             <button class="btn btn-primary btn-sm open-m" data-id="${m.id}">Open</button>
-            <button class="btn btn-outline btn-sm word-m" data-id="${m.id}">Word</button>
             <button class="btn btn-ghost btn-sm del-m" data-id="${m.id}">Delete</button>
           </div>
         </div>`;
     }).join('');
 
     box.querySelectorAll('.open-m').forEach(b => b.addEventListener('click', () => openSaved(b.dataset.id)));
-    box.querySelectorAll('.word-m').forEach(b => b.addEventListener('click', () => {
-      const m = loadAll().find(x => x.id === b.dataset.id); if (m) exportWord(m);
-    }));
     box.querySelectorAll('.del-m').forEach(b => b.addEventListener('click', () => deleteSaved(b.dataset.id)));
   }
 
-  function openSaved(id) {
-    const m = loadAll().find(x => x.id === id);
-    if (!m) return;
+  async function fetchFull(id) {
+    try { return await api('/api/vritta/meetings/' + encodeURIComponent(id)); }
+    catch (err) { return loadLocal().find(x => x.id === id) || null; }
+  }
+
+  async function openSaved(id) {
+    const m = await fetchFull(id);
+    if (!m) { toast('Could not open that meeting', 'err'); return; }
     Object.assign(state, JSON.parse(JSON.stringify(m)));
     currentSpeaker = '';
     $('mDate').value = state.date || '';
@@ -730,23 +782,28 @@
     switchTab('tab-minutes');
   }
 
-  function deleteSaved(id) {
-    const m = loadAll().find(x => x.id === id);
-    if (!m) return;
-    if (!confirm(`Delete “${m.title || 'this meeting'}” permanently? This cannot be undone.`)) return;
-    saveAll(loadAll().filter(x => x.id !== id));
+  async function deleteSaved(id) {
+    const m = journalCache.find(x => x.id === id);
+    if (!confirm(`Delete “${(m && m.title) || 'this meeting'}” permanently? This cannot be undone.`)) return;
+    try { await api('/api/vritta/meetings/' + encodeURIComponent(id), { method: 'DELETE' }); }
+    catch (err) { if (err.status === 401) { showLogin(); return; } toast('Could not delete on the server', 'err'); }
+    saveLocal(loadLocal().filter(x => x.id !== id));
     if (state.id === id) { state.id = null; state.savedAt = null; $('tbSavedState').textContent = 'Unsaved draft'; }
     renderSaved();
     toast('Meeting deleted');
   }
 
-  $('savedSearch').addEventListener('input', renderSaved);
+  $('savedSearch').addEventListener('input', paintSaved);
 
   /* ---------- backup export / import ---------- */
-  $('exportAllBtn').addEventListener('click', () => {
-    const list = loadAll();
+  $('exportAllBtn').addEventListener('click', async () => {
+    let list;
+    try { list = await api('/api/vritta/meetings'); }
+    catch (err) { list = loadLocal(); }
     if (!list.length) { toast('Nothing to export yet', 'err'); return; }
-    downloadBlob(JSON.stringify(list, null, 2),
+    const full = [];
+    for (const m of list) { const f = await fetchFull(m.id); if (f) full.push(f); }
+    downloadBlob(JSON.stringify(full, null, 2),
       `vritta-backup-${new Date().toISOString().split('T')[0]}.json`, 'application/json');
     toast('Backup downloaded', 'ok');
   });
@@ -754,21 +811,37 @@
   $('importFile').addEventListener('change', (e) => {
     const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       try {
         const incoming = JSON.parse(reader.result);
         if (!Array.isArray(incoming)) throw new Error('bad');
-        const list = loadAll();
-        const byId = new Map(list.map(m => [m.id, m]));
-        incoming.forEach(m => { if (m && m.id) byId.set(m.id, m); });
-        saveAll(Array.from(byId.values()).sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0)));
+        let ok = 0;
+        for (const m of incoming) {
+          if (!m || !m.id || !m.title) continue;
+          try { await api('/api/vritta/meetings', { method: 'POST', body: JSON.stringify(m) }); ok++; }
+          catch (err) { if (err.status === 401) { showLogin(); return; } }
+        }
         renderSaved();
-        toast('Backup imported', 'ok');
+        toast(`Imported ${ok} meeting${ok === 1 ? '' : 's'}`, 'ok');
       } catch (err) { toast('That file could not be read', 'err'); }
       $('importFile').value = '';
     };
     reader.readAsText(file);
   });
+
+  // One-time migration: push any meetings saved in this browser (older builds)
+  // up to the account, so nothing from before the login is stranded.
+  async function migrateLocalToServer() {
+    const local = loadLocal();
+    if (!local.length) return;
+    let migrated = 0;
+    for (const m of local) {
+      if (!m || !m.id || !m.title) continue;
+      try { await api('/api/vritta/meetings', { method: 'POST', body: JSON.stringify(m) }); migrated++; }
+      catch (err) { return; }
+    }
+    if (migrated) toast(`Moved ${migrated} earlier meeting${migrated === 1 ? '' : 's'} into your account`, 'ok');
+  }
 
   /* ==========================================================================
      Exports — Print, Word (.doc HTML), Copy
@@ -816,20 +889,22 @@
     return L.join('\n');
   }
 
-  function exportWord(m) {
+  // Shared minutes body (RUAS letterhead: purple + orange). Used by both the
+  // Word export and the email sender so they always match.
+  const PURPLE = '#3d1a5e', ORANGE = '#e8541e';
+  function buildMinutesBody(m) {
     const items = (m.agenda || '').split('\n').map(s => s.replace(/^[\s\-•*\d.)]+/, '').trim()).filter(Boolean);
     const turns = (m.segments || []).length ? groupTurns(m.segments) : [];
-    const NAVY = '#6d1f2a', TEAL = '#9a7b1e', ACCENT = '#c8992a';
-    const h = (n, t) => `<h2 style="font-family:Georgia,serif;font-size:13pt;color:${NAVY};border-bottom:1px solid #ccc;padding-bottom:3px;margin:16px 0 8px;"><span style="color:${ACCENT}">${n}.</span> ${esc(t)}</h2>`;
+    const h = (n, t) => `<h2 style="font-family:Georgia,serif;font-size:13pt;color:${PURPLE};border-bottom:1px solid #ddd;padding-bottom:3px;margin:16px 0 8px;"><span style="color:${ORANGE}">${n}.</span> ${esc(t)}</h2>`;
 
     let body = '';
-    body += `<div style="text-align:center;border-bottom:2px solid ${ACCENT};padding-bottom:8px;margin-bottom:14px;">`;
-    body += `<div style="font-weight:bold;color:${NAVY};font-size:13pt;">M. S. Ramaiah University of Applied Sciences</div>`;
-    body += `<div style="color:#7c6f6a;font-size:9pt;">Bengaluru</div>`;
-    if (m.org) body += `<div style="font-weight:bold;color:${NAVY};font-size:11pt;margin-top:2px;">${esc(m.org)}</div>`;
-    body += `<div style="font-family:Georgia,serif;font-size:20pt;font-weight:bold;color:${NAVY};margin-top:4px;">Minutes of Meeting</div>`;
-    body += `<div style="letter-spacing:2px;color:${ACCENT};font-size:8pt;">कार्यवृत्त · KARYAVRITTA</div></div>`;
-    body += `<div style="text-align:center;background:#f2f5f9;padding:8px;margin-bottom:14px;"><div style="font-family:Georgia,serif;font-size:14pt;font-weight:bold;color:${NAVY};">${esc(m.title || 'Untitled meeting')}</div></div>`;
+    body += `<div style="text-align:center;border-bottom:2px solid ${ORANGE};padding-bottom:8px;margin-bottom:14px;">`;
+    body += `<div style="font-weight:bold;color:${PURPLE};font-size:13pt;">M. S. Ramaiah University of Applied Sciences</div>`;
+    body += `<div style="color:#6f6577;font-size:9pt;">Bengaluru</div>`;
+    if (m.org) body += `<div style="font-weight:bold;color:${PURPLE};font-size:11pt;margin-top:2px;">${esc(m.org)}</div>`;
+    body += `<div style="font-family:Georgia,serif;font-size:20pt;font-weight:bold;color:${PURPLE};margin-top:4px;">Minutes of Meeting</div>`;
+    body += `<div style="letter-spacing:2px;color:${ORANGE};font-size:8pt;">कार्यवृत्त · KARYAVRITTA</div></div>`;
+    body += `<div style="text-align:center;background:#f4f0f8;padding:8px;margin-bottom:14px;"><div style="font-family:Georgia,serif;font-size:14pt;font-weight:bold;color:${PURPLE};">${esc(m.title || 'Untitled meeting')}</div></div>`;
 
     body += h(1, 'Meeting information');
     body += '<table style="font-size:10.5pt;border-collapse:collapse;">';
@@ -838,13 +913,13 @@
     if (m.time) meta.push(['Time', m.time]);
     if (m.venue) meta.push(['Venue / platform', m.venue]);
     if (m.chair) meta.push(['Chaired / led by', m.chair]);
-    meta.forEach(([k, v]) => body += `<tr><td style="padding:2px 12px 2px 0;font-weight:bold;color:${NAVY};">${esc(k)}</td><td style="padding:2px 0;">${esc(v)}</td></tr>`);
+    meta.forEach(([k, v]) => body += `<tr><td style="padding:2px 12px 2px 0;font-weight:bold;color:${PURPLE};">${esc(k)}</td><td style="padding:2px 0;">${esc(v)}</td></tr>`);
     body += '</table>';
 
     if ((m.attendees || []).length) {
       body += h(2, 'Attendees');
-      body += `<table style="width:100%;border-collapse:collapse;font-size:10pt;"><tr><th style="background:${NAVY};color:#fff;text-align:left;padding:5px;">Name</th><th style="background:${NAVY};color:#fff;text-align:left;padding:5px;">Role</th></tr>`;
-      m.attendees.forEach(a => body += `<tr><td style="border:1px solid #ccc;padding:5px;">${esc(a.name)}</td><td style="border:1px solid #ccc;padding:5px;">${esc(a.role || '—')}</td></tr>`);
+      body += `<table style="width:100%;border-collapse:collapse;font-size:10pt;"><tr><th style="background:${PURPLE};color:#fff;text-align:left;padding:5px;">Name</th><th style="background:${PURPLE};color:#fff;text-align:left;padding:5px;">Role</th></tr>`;
+      m.attendees.forEach(a => body += `<tr><td style="border:1px solid #ddd;padding:5px;">${esc(a.name)}</td><td style="border:1px solid #ddd;padding:5px;">${esc(a.role || '—')}</td></tr>`);
       body += '</table>';
     }
     if (items.length) { body += h(3, 'Agenda') + '<ol style="font-size:10.5pt;">' + items.map(i => `<li>${esc(i)}</li>`).join('') + '</ol>'; }
@@ -852,22 +927,54 @@
     if (turns.length) {
       body += h(5, 'Discussion notes');
       body += turns.map(t =>
-        `<p style="font-size:10.5pt;line-height:1.6;margin:0 0 6px;">${t.speaker ? `<b style="color:${NAVY}">${esc(t.speaker)}:</b> ` : ''}${esc(t.text)}</p>`
+        `<p style="font-size:10.5pt;line-height:1.6;margin:0 0 6px;">${t.speaker ? `<b style="color:${PURPLE}">${esc(t.speaker)}:</b> ` : ''}${esc(t.text)}</p>`
       ).join('');
     }
     if ((m.decisions || []).length) { body += h(6, 'Decisions') + '<ol style="font-size:10.5pt;line-height:1.6;">' + m.decisions.map(d => `<li>${esc(d)}</li>`).join('') + '</ol>'; }
     if ((m.actions || []).length) {
       body += h(7, 'Action items');
-      body += `<table style="width:100%;border-collapse:collapse;font-size:10pt;"><tr><th style="background:${NAVY};color:#fff;text-align:left;padding:5px;">Action</th><th style="background:${NAVY};color:#fff;text-align:left;padding:5px;">Owner</th><th style="background:${NAVY};color:#fff;text-align:left;padding:5px;">Due</th></tr>`;
-      m.actions.forEach(a => body += `<tr><td style="border:1px solid #ccc;padding:5px;">${esc(a.task)}</td><td style="border:1px solid #ccc;padding:5px;">${esc(a.owner || '—')}</td><td style="border:1px solid #ccc;padding:5px;">${a.due ? esc(prettyDate(a.due)) : '—'}</td></tr>`);
+      body += `<table style="width:100%;border-collapse:collapse;font-size:10pt;"><tr><th style="background:${PURPLE};color:#fff;text-align:left;padding:5px;">Action</th><th style="background:${PURPLE};color:#fff;text-align:left;padding:5px;">Owner</th><th style="background:${PURPLE};color:#fff;text-align:left;padding:5px;">Due</th></tr>`;
+      m.actions.forEach(a => body += `<tr><td style="border:1px solid #ddd;padding:5px;">${esc(a.task)}</td><td style="border:1px solid #ddd;padding:5px;">${esc(a.owner || '—')}</td><td style="border:1px solid #ddd;padding:5px;">${a.due ? esc(prettyDate(a.due)) : '—'}</td></tr>`);
       body += '</table>';
     }
     body += `<table style="width:100%;margin-top:40px;font-size:10pt;"><tr><td style="width:50%;">_____________________________<br><b>${esc(m.chair || 'Prepared by')}</b><br><span style="color:#666;">Minutes prepared with Vritta</span></td><td style="width:50%;">_____________________________<br><b>${esc(m.chair || 'Chair')}</b><br><span style="color:#666;">Approved</span></td></tr></table>`;
+    return body;
+  }
 
-    const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>Minutes</title></head><body style="font-family:Calibri,Arial,sans-serif;color:#1f2937;">${body}</body></html>`;
+  function exportWord(m) {
+    const body = buildMinutesBody(m);
+    const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>Minutes</title></head><body style="font-family:Calibri,Arial,sans-serif;color:#241a2e;">${body}</body></html>`;
     const name = 'Minutes_' + (m.title || 'Meeting').replace(/[^a-z0-9]+/gi, '_').slice(0, 40) + '.doc';
     downloadBlob('﻿' + html, name, 'application/msword');
     toast('Word document downloaded', 'ok');
+  }
+
+  // Email HTML for the minutes (wrapped so it renders in an inbox).
+  function minutesEmailHTML(m) {
+    return `<div style="max-width:680px;margin:0 auto;font-family:Calibri,Arial,sans-serif;color:#241a2e;">${buildMinutesBody(m)}</div>`;
+  }
+
+  // Email HTML for a meeting invitation.
+  function inviteEmailHTML(m) {
+    const items = (m.agenda || '').split('\n').map(s => s.replace(/^[\s\-•*\d.)]+/, '').trim()).filter(Boolean);
+    let b = `<div style="max-width:600px;margin:0 auto;font-family:Calibri,Arial,sans-serif;color:#241a2e;">`;
+    b += `<div style="text-align:center;border-bottom:2px solid ${ORANGE};padding-bottom:8px;margin-bottom:14px;">`;
+    b += `<div style="font-weight:bold;color:${PURPLE};font-size:12pt;">M. S. Ramaiah University of Applied Sciences</div>`;
+    if (m.org) b += `<div style="color:#6f6577;font-size:10pt;">${esc(m.org)}</div>`;
+    b += `<div style="font-family:Georgia,serif;font-size:18pt;font-weight:bold;color:${PURPLE};margin-top:4px;">Meeting Invitation</div></div>`;
+    b += `<h2 style="color:${PURPLE};font-size:15pt;margin:0 0 10px;">${esc(m.title || 'Meeting')}</h2>`;
+    b += '<table style="font-size:11pt;border-collapse:collapse;margin-bottom:12px;">';
+    if (m.date) b += `<tr><td style="padding:3px 14px 3px 0;font-weight:bold;color:${PURPLE};">Date</td><td>${esc(prettyDate(m.date))}</td></tr>`;
+    if (m.time) b += `<tr><td style="padding:3px 14px 3px 0;font-weight:bold;color:${PURPLE};">Time</td><td>${esc(m.time)}</td></tr>`;
+    if (m.venue) b += `<tr><td style="padding:3px 14px 3px 0;font-weight:bold;color:${PURPLE};">Venue / platform</td><td>${esc(m.venue)}</td></tr>`;
+    if (m.chair) b += `<tr><td style="padding:3px 14px 3px 0;font-weight:bold;color:${PURPLE};">Chaired by</td><td>${esc(m.chair)}</td></tr>`;
+    b += '</table>';
+    if (items.length) {
+      b += `<h3 style="color:${PURPLE};font-size:12pt;margin:12px 0 4px;">Agenda</h3><ol style="font-size:11pt;line-height:1.6;">${items.map(i => `<li>${esc(i)}</li>`).join('')}</ol>`;
+    }
+    b += `<p style="font-size:10pt;color:#6f6577;margin-top:18px;border-top:1px solid #e6e1ec;padding-top:8px;">You’re invited to the above meeting. A calendar invite is attached — accept it to add it to your calendar.</p>`;
+    b += `</div>`;
+    return b;
   }
 
   function downloadBlob(content, filename, type) {
@@ -880,6 +987,152 @@
   }
 
   /* ==========================================================================
+     Email invitations & minutes
+     ========================================================================== */
+  const emailModal = $('emailModal');
+  let emailMode = 'invite';
+
+  function attendeeEmails() {
+    return state.attendees.map(a => a.email).filter(Boolean);
+  }
+
+  function openEmailModal(mode) {
+    syncDetailsFromForm();
+    if (mode === 'minutes' && $('minutesDoc').style.display === 'none') {
+      toast('Build the minutes first', 'err'); return;
+    }
+    emailMode = mode;
+    const title = state.title || 'Meeting';
+    $('emailModalTitle').textContent = mode === 'invite' ? 'Email meeting invitation' : 'Email the minutes';
+    $('emailModalSub').textContent = mode === 'invite'
+      ? 'Sends an invitation (with a calendar file) from your account.'
+      : 'Sends the full minutes from your account.';
+    $('emailRecipients').value = attendeeEmails().join(', ');
+    $('emailSubject').value = (mode === 'invite' ? 'Invitation: ' : 'Minutes: ') + title;
+    $('emailMessage').value = mode === 'invite'
+      ? `Dear all,\n\nYou are invited to "${title}"${state.date ? ' on ' + prettyDate(state.date) : ''}${state.time ? ' at ' + state.time : ''}. Details are below.\n\nRegards,\n${state.chair || ''}`.trim()
+      : `Dear all,\n\nPlease find the minutes of "${title}" below.\n\nRegards,\n${state.chair || ''}`.trim();
+    $('icsToggleRow').style.display = mode === 'invite' ? 'flex' : 'none';
+
+    const configured = session.emailConfigured;
+    $('emailNotConfigured').style.display = configured ? 'none' : 'block';
+    $('emailSendBtn').disabled = !configured;
+
+    emailModal.classList.add('open');
+  }
+  function closeEmailModal() { emailModal.classList.remove('open'); }
+
+  $('inviteBtn').addEventListener('click', () => openEmailModal('invite'));
+  $('emailMinutesBtn').addEventListener('click', () => openEmailModal('minutes'));
+  $('emailCancelBtn').addEventListener('click', closeEmailModal);
+  emailModal.addEventListener('click', (e) => { if (e.target === emailModal) closeEmailModal(); });
+
+  $('emailSendBtn').addEventListener('click', async () => {
+    const recipients = $('emailRecipients').value.split(',').map(s => s.trim()).filter(Boolean);
+    if (!recipients.length) { toast('Add at least one recipient', 'err'); return; }
+    const subject = $('emailSubject').value.trim();
+    const message = $('emailMessage').value.trim();
+    const intro = message ? `<p style="font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#241a2e;white-space:pre-wrap;">${esc(message)}</p>` : '';
+    const html = intro + (emailMode === 'invite' ? inviteEmailHTML(state) : minutesEmailHTML(state));
+    const withInvite = emailMode === 'invite' && $('emailAttachIcs').checked;
+
+    const btn = $('emailSendBtn');
+    btn.disabled = true; btn.textContent = 'Sending…';
+    try {
+      const out = await api('/api/vritta/invite', {
+        method: 'POST',
+        body: JSON.stringify({
+          recipients, subject, html, withInvite,
+          meeting: {
+            title: state.title, date: state.date, time: state.time,
+            venue: state.venue, chair: state.chair, summary: state.summary
+          }
+        })
+      });
+      const n = (out.accepted || recipients).length;
+      const rej = (out.rejected || []).length;
+      closeEmailModal();
+      toast(`Email sent to ${n} recipient${n === 1 ? '' : 's'}${rej ? ` (${rej} rejected)` : ''}`, 'ok');
+    } catch (err) {
+      if (err.status === 401) { closeEmailModal(); showLogin(); return; }
+      if (err.status === 503) { $('emailNotConfigured').style.display = 'block'; toast('Email is not set up yet', 'err'); }
+      else { toast(err.message || 'Could not send email', 'err'); }
+    } finally {
+      btn.disabled = !session.emailConfigured; btn.textContent = 'Send email';
+    }
+  });
+
+  /* ==========================================================================
+     Authentication / session
+     ========================================================================== */
+  function showApp() {
+    $('loginScreen').style.display = 'none';
+    $('heroSection').style.display = '';
+    $('appMain').style.display = '';
+    $('mobileNav').style.display = '';
+    $('navTabs').style.display = '';
+    $('accountChip').style.display = 'flex';
+    $('accountWho').textContent = session.email || '';
+  }
+  function showLogin() {
+    $('loginScreen').style.display = 'flex';
+    $('heroSection').style.display = 'none';
+    $('appMain').style.display = 'none';
+    $('mobileNav').style.display = 'none';
+    $('navTabs').style.display = 'none';
+    $('accountChip').style.display = 'none';
+  }
+
+  async function loadConfig() {
+    try { const c = await api('/api/vritta/config'); session.emailConfigured = !!c.emailConfigured; }
+    catch (e) { session.emailConfigured = false; }
+  }
+
+  async function bootstrap() {
+    await loadConfig();
+    try {
+      const me = await api('/api/admin/me');
+      session.email = me.email;
+      showApp();
+      await migrateLocalToServer();
+      renderSaved();
+    } catch (err) {
+      showLogin();
+    }
+  }
+
+  $('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = $('loginEmail').value.trim();
+    const password = $('loginPassword').value;
+    const errBox = $('loginErr');
+    errBox.textContent = '';
+    const btn = $('loginSubmit');
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    try {
+      const out = await api('/api/admin/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+      session.email = out.email || email;
+      $('loginPassword').value = '';
+      showApp();
+      await loadConfig();
+      await migrateLocalToServer();
+      renderSaved();
+    } catch (err) {
+      errBox.textContent = err.status === 429
+        ? 'Too many attempts. Please wait a few minutes and try again.'
+        : 'Incorrect email or password.';
+    } finally {
+      btn.disabled = false; btn.textContent = 'Sign in';
+    }
+  });
+
+  $('logoutBtn').addEventListener('click', async () => {
+    try { await api('/api/admin/logout', { method: 'POST' }); } catch (e) {}
+    session.email = null;
+    showLogin();
+  });
+
+  /* ==========================================================================
      Init
      ========================================================================== */
   renderAttendeeChips();
@@ -887,4 +1140,5 @@
   renderTranscript();
   showMinutesEmpty(true);
   restoreDraft();
+  bootstrap();
 })();
